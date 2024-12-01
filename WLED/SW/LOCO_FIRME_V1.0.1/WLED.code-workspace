@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../WLED"
+		},
+		{
+			"name": "Blink Led",
+			"path": "../Blink Led"
+		},
+		{
+			"name": "LOCO_FIRME_V1.0.1",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

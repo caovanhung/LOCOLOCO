@@ -1,0 +1,14 @@
+Added Component: Designator=U?(TO263-5)
+Add component (AddParameter): Name = "Category"; Value = "IC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CPN"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MPN"; Value = "LM2596SX-ADJ/NOPB"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PinCount"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "LM2596S-ADJ"; VariantName = "[No Variations]"
+Added Member To Class: ClassName=WLED_SCH Member=Component U? LM2596S-ADJ
+Added Member To Class: ClassName=WLED_SCH Member=Component U? LM7812
+Added Member To Class: ClassName=WLED_SCH Member=Component U? SN74AHCT125N
+Added Room: Name=WLED_SCH

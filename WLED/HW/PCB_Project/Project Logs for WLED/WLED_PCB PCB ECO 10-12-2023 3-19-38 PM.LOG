@@ -1,0 +1,121 @@
+Removed Pin From Net: NetName=Vin Pin=C2-1
+Removed Pin From Net: NetName=GND Pin=C2-2
+Removed Pin From Net: NetName=5V Pin=C3-1
+Removed Pin From Net: NetName=GND Pin=C3-2
+Removed Pin From Net: NetName=3V3 Pin=C4-1
+Removed Pin From Net: NetName=GND Pin=C4-2
+Removed Pin From Net: NetName=5V Pin=C5-1
+Removed Pin From Net: NetName=GND Pin=C5-2
+Removed Pin From Net: NetName=3V3 Pin=C6-1
+Removed Pin From Net: NetName=GND Pin=C6-2
+Removed Pin From Net: NetName=3V3 Pin=C7-1
+Removed Pin From Net: NetName=GND Pin=C7-2
+Removed Member From Class: ClassName=WLED_SCH Member=C7
+Change Component Footprint: Designator=C2 Old Footprint=CAPC-0805 (2012) New Footprint=CAPC-0603 (1608)
+Change Component Footprint: Designator=C3 Old Footprint=CAPC-0805 (2012) New Footprint=CAPC-0603 (1608)
+Change Component Footprint: Designator=C4 Old Footprint=CAPC-0805 (2012) New Footprint=CAPC-0603 (1608)
+Change Component Footprint: Designator=C5 Old Footprint=CAPC-0805 (2012) New Footprint=CAPC-0603 (1608)
+Change Component Footprint: Designator=C6 Old Footprint=CAPC-0805 (2012) New Footprint=CAPC-0603 (1608)
+Change Component Footprint: Designator=R1 Old Footprint=RESC-0805 (2012) New Footprint=RESC-0603 (1608)
+Change Component Footprint: Designator=R2 Old Footprint=RESC-0805 (2012) New Footprint=RESC-0603 (1608)
+Change Component Footprint: Designator=R3 Old Footprint=RESC-0805 (2012) New Footprint=RESC-0603 (1608)
+Change Component Comment : Designator=C2 Old Comment=10uF New Comment=22uF/16V
+Change Component Comment : Designator=C5 Old Comment=10uF New Comment=22uF/16V
+Change Component Comment : Designator=C6 Old Comment=10uF New Comment=100nF
+Change Component Designator: OldDesignator=P? NewDesignator=P2
+Change Component Designator: OldDesignator=U? NewDesignator=U3
+Change component parameters: Designator = "C2" ("C2"); Footprint = "CAPC-0805 (2012)"; UniqueID = "\ZXGXIBWM" ("\ZXGXIBWM")
+Change component parameters (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C3" ("C3"); Footprint = "CAPC-0805 (2012)"; UniqueID = "\WSXDDKKS" ("\WSXDDKKS")
+Change component parameters (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C4" ("C4"); Footprint = "CAPC-0805 (2012)"; UniqueID = "\FXJRLRWY" ("\FXJRLRWY")
+Change component parameters (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C5" ("C5"); Footprint = "CAPC-0805 (2012)"; UniqueID = "\KXBQPDEK" ("\KXBQPDEK")
+Change component parameters (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Change component parameters: Designator = "C6" ("C6"); Footprint = "CAPC-0805 (2012)"; UniqueID = "\AYXGTMRK" ("\AYXGTMRK")
+Change component parameters (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R1" ("R1"); Footprint = "RESC-0805 (2012)"; UniqueID = "\YBYZMWMH" ("\YBYZMWMH")
+Change component parameters (AddParameter): Name = "Category"; Value = "RESISTOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = "VT-00328"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R2" ("R2"); Footprint = "RESC-0805 (2012)"; UniqueID = "\OALBARQE" ("\OALBARQE")
+Change component parameters (AddParameter): Name = "Category"; Value = "RESISTOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = "VT-00328"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Change component parameters: Designator = "R3" ("R3"); Footprint = "RESC-0805 (2012)"; UniqueID = "\WBEDBISB" ("\WBEDBISB")
+Change component parameters (AddParameter): Name = "Category"; Value = "RESISTOR"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "CompanyID"; Value = "VT-00328"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "MPN"; Value = "RC0603FR-0710KL"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "PinCount"; Value = ""; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Change component parameters (AddParameter): Name = "Value"; Value = "10K"; VariantName = "[No Variations]"
+Added Component: Designator=C1(CAPC-0603 (1608))
+Add component (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MPN"; Value = "CL10A226MO7JZNC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "22uF/16V"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=C1-1
+Added Pin To Net: NetName=Vin Pin=C1-2
+Added Pin To Net: NetName=GND Pin=C2-1
+Added Pin To Net: NetName=3V3 Pin=C2-2
+Added Pin To Net: NetName=GND Pin=C3-1
+Added Pin To Net: NetName=5V Pin=C3-2
+Added Pin To Net: NetName=GND Pin=C4-1
+Added Pin To Net: NetName=5V Pin=C4-2
+Added Pin To Net: NetName=GND Pin=C5-1
+Added Pin To Net: NetName=3V3 Pin=C5-2
+Added Pin To Net: NetName=GND Pin=C6-1
+Added Pin To Net: NetName=3V3 Pin=C6-2
+Added Member To Class: ClassName=WLED_SCH Member=Component C1 22uF/16V
+Added Room: Name=WLED_SCH

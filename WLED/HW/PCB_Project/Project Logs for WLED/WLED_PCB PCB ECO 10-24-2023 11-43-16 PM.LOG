@@ -1,0 +1,12 @@
+Removed Pin From Net: NetName=3V3 Pin=P2-1
+Removed Pin From Net: NetName=NetM1_21 Pin=P2-2
+Removed Pin From Net: NetName=NetM1_22 Pin=P2-3
+Removed Pin From Net: NetName=GND Pin=P2-4
+Removed Member From Class: ClassName=WLED_SCH Member=P2
+Added Component: Designator=P?(JP4_1.27MM)
+Added Pin To Net: NetName=3V3 Pin=P?-1
+Added Pin To Net: NetName=NetM1_21 Pin=P?-2
+Added Pin To Net: NetName=NetM1_22 Pin=P?-3
+Added Pin To Net: NetName=GND Pin=P?-4
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Jump 4x1F 1.27mm
+Added Room: Name=WLED_SCH

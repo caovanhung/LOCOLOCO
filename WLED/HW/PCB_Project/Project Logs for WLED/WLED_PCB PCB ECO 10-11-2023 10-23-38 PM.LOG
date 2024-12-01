@@ -1,0 +1,19 @@
+Added Component: Designator=*(USB_TYPE_C_6P)
+Added Member To Class: ClassName=WLED_SCH Member=Component * USB_TYPE_C-6P
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component D? 1N4007
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Header 5P
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Header 4 - M
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component U? SN74AHCT125N
+Added Member To Class: ClassName=WLED_SCH Member=Component U? LM1084ISX-5.0/NOPB
+Added Room: Name=WLED_SCH

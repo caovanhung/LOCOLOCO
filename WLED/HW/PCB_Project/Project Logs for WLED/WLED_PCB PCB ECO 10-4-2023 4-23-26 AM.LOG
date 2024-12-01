@@ -1,0 +1,28 @@
+Added Component: Designator=C?(CAP_ALUM_D100_S50_H200)
+Add component (AddParameter): Name = "Category"; Value = "CAPACITOR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CompanyID"; Value = "VT-00044"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MPN"; Value = "ECA-1EM102B"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PinCount"; Value = "2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Solder"; Value = "WAVE"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "108/25V"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=Vin Pin=C?-1
+Added Pin To Net: NetName=GND Pin=C?-2
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C? 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component D? 1N4007
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Header 4 - M
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Header 5P
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R? 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component U? LM1084ISX-5.0/NOPB
+Added Member To Class: ClassName=WLED_SCH Member=Component U? SN74AHCT125N
+Added Room: Name=WLED_SCH

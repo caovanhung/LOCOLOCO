@@ -1,0 +1,300 @@
+*************************************************************
+FileName = Dat_Mach_LED.GBR
+AutoAperture = True
+*************************************************************
+Generating : Bottom Pad Master
+      File : Dat_Mach_LED.GPB
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D19
+    D20
+    D21
+    D22
+    D25
+    D26
+    D27
+*************************************************************
+
+*************************************************************
+Generating : Top Layer
+      File : Dat_Mach_LED.GTL
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+*************************************************************
+
+*************************************************************
+Generating : Bottom Layer
+      File : Dat_Mach_LED.GBL
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D18
+    D19
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+*************************************************************
+
+*************************************************************
+Generating : Top Pad Master
+      File : Dat_Mach_LED.GPT
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D19
+    D20
+    D21
+    D22
+*************************************************************
+
+*************************************************************
+Generating : Top Overlay
+      File : Dat_Mach_LED.GTO
+
+    Adding Layer      : Top Overlay
+
+
+Used DCodes :
+    D18
+    D28
+    D29
+    D30
+    D31
+    D32
+*************************************************************
+
+*************************************************************
+Generating : Top Paste
+      File : Dat_Mach_LED.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D17
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : Dat_Mach_LED.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Top Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D13
+    D14
+    D15
+    D17
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : Dat_Mach_LED.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D26
+    D27
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : Dat_Mach_LED.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Bottom Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D25
+    D26
+    D27
+*************************************************************
+
+*************************************************************
+Generating : Bottom Overlay
+      File : Dat_Mach_LED.GBO
+
+    Adding Layer      : Bottom Overlay
+
+
+Used DCodes :
+    D28
+    D32
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 1
+      File : Dat_Mach_LED.GM1
+
+    Adding Layer      : Mechanical 1
+
+
+Used DCodes :
+    D40
+    D42
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 13
+      File : Dat_Mach_LED.GM13
+
+    Adding Layer      : Mechanical 13
+
+
+Used DCodes :
+    D30
+    D31
+    D43
+    D44
+    D45
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 14
+      File : Dat_Mach_LED.GM14
+
+    Adding Layer      : Mechanical 14
+
+
+Used DCodes :
+    D31
+    D43
+    D44
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 15
+      File : Dat_Mach_LED.GM15
+
+    Adding Layer      : Mechanical 15
+
+
+Used DCodes :
+    D28
+    D30
+    D32
+*************************************************************
+
+*************************************************************
+Generating : Mechanical 16
+      File : Dat_Mach_LED.GM16
+
+    Adding Layer      : Mechanical 16
+
+
+Used DCodes :
+    D28
+    D32
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : Dat_Mach_LED.GD1
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D46
+    D47
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : Dat_Mach_LED.GG1
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D46
+*************************************************************
+

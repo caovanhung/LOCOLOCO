@@ -1,0 +1,24 @@
+Removed Pin From Net: NetName=GND Pin=C1-1
+Removed Pin From Net: NetName=GND Pin=C3-1
+Removed Pin From Net: NetName=5V Pin=C3-2
+Removed Pin From Net: NetName=5V Pin=D1-1
+Removed Pin From Net: NetName=GND Pin=P1-4
+Removed Pin From Net: NetName=GND Pin=U1-1
+Removed Pin From Net: NetName=5V Pin=U1-2
+Removed Pin From Net: NetName=GND Pin=U3-5
+Removed Member From Class: ClassName=WLED_SCH Member=C1
+Removed Member From Class: ClassName=WLED_SCH Member=C3
+Removed Member From Class: ClassName=WLED_SCH Member=D1
+Removed Member From Class: ClassName=WLED_SCH Member=P1
+Removed Member From Class: ClassName=WLED_SCH Member=U1
+Added Component: Designator=P?(HDR_3.81MM_RA_3x1)
+Added Pin To Net: NetName=5V Pin=*-A9
+Added Pin To Net: NetName=5V Pin=*-B9
+Added Pin To Net: NetName=5V Pin=P?-1
+Added Pin To Net: NetName=GND Pin=P?-3
+Change Net Name : Old Net Name=5V New Net Name=Vin
+Added Pin To Net: NetName=NetP?_2 Pin=P?-2
+Added Pin To Net: NetName=NetP?_2 Pin=U3-3
+Added Net: Name=NetP?_2
+Added Member To Class: ClassName=WLED_SCH Member=Component P? CON 3P 15EDG3.81
+Added Room: Name=WLED_SCH

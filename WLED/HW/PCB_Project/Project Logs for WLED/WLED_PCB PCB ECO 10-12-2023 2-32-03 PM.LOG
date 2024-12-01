@@ -1,0 +1,16 @@
+Removed Pin From Net: NetName=Vin Pin=C1-1
+Removed Pin From Net: NetName=GND Pin=C1-2
+Removed Pin From Net: NetName=GND Pin=C8-2
+Removed Pin From Net: NetName=3V3 Pin=R4-2
+Removed Pin From Net: NetName=GND Pin=SW1-2
+Removed Pin From Net: NetName=GND Pin=SW1-3
+Removed Member From Class: ClassName=WLED_SCH Member=C1
+Removed Member From Class: ClassName=WLED_SCH Member=C8
+Removed Member From Class: ClassName=WLED_SCH Member=R4
+Removed Member From Class: ClassName=WLED_SCH Member=SW1
+Added Pin To Net: NetName=NetP2_2 Pin=P2-2
+Added Net: Name=NetP2_2
+Added Member To Class: ClassName=WLED_SCH Member=Component C4 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component D2 1N4007
+Added Member To Class: ClassName=WLED_SCH Member=Component U2 LM1084ISX-3.3/NOPB
+Added Room: Name=WLED_SCH

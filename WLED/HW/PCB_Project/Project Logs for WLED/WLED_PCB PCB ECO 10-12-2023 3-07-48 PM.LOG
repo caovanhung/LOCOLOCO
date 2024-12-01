@@ -1,0 +1,41 @@
+Removed Pin From Net: NetName=3V3 Pin=P2-1
+Removed Pin From Net: NetName=NetM1_21 Pin=P2-3
+Removed Pin From Net: NetName=GND Pin=P2-5
+Removed Pin From Net: NetName=GND Pin=U3-1
+Removed Pin From Net: NetName=NetM1_17 Pin=U3-2
+Removed Pin From Net: NetName=NetP1_2 Pin=U3-3
+Removed Pin From Net: NetName=GND Pin=U3-4
+Removed Pin From Net: NetName=NetP1_3 Pin=U3-6
+Removed Pin From Net: NetName=GND Pin=U3-7
+Removed Pin From Net: NetName=5V Pin=U3-14
+Removed Member From Class: ClassName=WLED_SCH Member=P2
+Removed Member From Class: ClassName=WLED_SCH Member=U3
+Added Component: Designator=P?(HDR1X4)
+Add component (AddParameter): Name = "CompanyID"; Value = "VT-00125"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR_URL"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MPN"; Value = "S1012EC-40-ND"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Solder"; Value = "WAVE"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "Header 4P"; VariantName = "[No Variations]"
+Added Component: Designator=U?(PW14-L)
+Add component (AddParameter): Name = "Copyright"; Value = "Copyright (C) 2023 Ultra Librarian. All rights reserved."; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Manufacturer_Part_Number"; Value = "SN74AHCT125PWR"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Mfr_Name"; Value = "Texas Instruments"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "RefDes"; Value = "RefDes"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Type"; Value = "DEV"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=M1-22
+Added Pin To Net: NetName=3V3 Pin=P?-1
+Added Pin To Net: NetName=NetM1_21 Pin=P?-2
+Added Pin To Net: NetName=GND Pin=P?-3
+Added Pin To Net: NetName=GND Pin=P?-4
+Added Pin To Net: NetName=GND Pin=U?-1
+Added Pin To Net: NetName=NetM1_17 Pin=U?-2
+Added Pin To Net: NetName=NetP1_2 Pin=U?-3
+Added Pin To Net: NetName=GND Pin=U?-4
+Added Pin To Net: NetName=GND Pin=U?-5
+Added Pin To Net: NetName=NetP1_3 Pin=U?-6
+Added Pin To Net: NetName=GND Pin=U?-7
+Added Pin To Net: NetName=5V Pin=U?-14
+Added Member To Class: ClassName=WLED_SCH Member=Component P? Header 4P
+Added Member To Class: ClassName=WLED_SCH Member=Component U? SN74AHCT125PWR
+Added Room: Name=WLED_SCH

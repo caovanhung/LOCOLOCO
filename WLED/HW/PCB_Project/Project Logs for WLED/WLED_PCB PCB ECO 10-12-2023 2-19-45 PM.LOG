@@ -1,0 +1,51 @@
+Change Component Designator: OldDesignator=C? NewDesignator=C1
+Change Component Designator: OldDesignator=C? NewDesignator=C2
+Change Component Designator: OldDesignator=C? NewDesignator=C3
+Change Component Designator: OldDesignator=C? NewDesignator=C4
+Change Component Designator: OldDesignator=C? NewDesignator=C5
+Change Component Designator: OldDesignator=C? NewDesignator=C6
+Change Component Designator: OldDesignator=C? NewDesignator=C7
+Change Component Designator: OldDesignator=C? NewDesignator=C8
+Change Component Designator: OldDesignator=D? NewDesignator=D1
+Change Component Designator: OldDesignator=D? NewDesignator=D2
+Change Component Designator: OldDesignator=IR? NewDesignator=IR1
+Change Component Designator: OldDesignator=M? NewDesignator=M1
+Change Component Designator: OldDesignator=P? NewDesignator=P1
+Change Component Designator: OldDesignator=P? NewDesignator=P2
+Change Component Designator: OldDesignator=R? NewDesignator=R1
+Change Component Designator: OldDesignator=R? NewDesignator=R2
+Change Component Designator: OldDesignator=R? NewDesignator=R3
+Change Component Designator: OldDesignator=R? NewDesignator=R4
+Change Component Designator: OldDesignator=R? NewDesignator=R5
+Change Component Designator: OldDesignator=SW? NewDesignator=SW1
+Change Component Designator: OldDesignator=U? NewDesignator=U1
+Change Component Designator: OldDesignator=U? NewDesignator=U2
+Change Component Designator: OldDesignator=U? NewDesignator=U3
+Change Net Name : Old Net Name=NetC?_1 New Net Name=NetC8_1
+Change Net Name : Old Net Name=NetIR?_1 New Net Name=NetIR1_1
+Change Net Name : Old Net Name=NetM?_1 New Net Name=NetM1_1
+Change Net Name : Old Net Name=NetM?_3 New Net Name=NetM1_3
+Change Net Name : Old Net Name=NetM?_16 New Net Name=NetM1_16
+Change Net Name : Old Net Name=NetM?_17 New Net Name=NetM1_17
+Change Net Name : Old Net Name=NetM?_21 New Net Name=NetM1_21
+Change Net Name : Old Net Name=NetM?_22 New Net Name=NetM1_22
+Change Net Name : Old Net Name=NetP?_2 New Net Name=NetP1_2
+Change Net Name : Old Net Name=NetP?_3 New Net Name=NetP1_3
+Change Net Name : Old Net Name=NetR?_1 New Net Name=NetR5_1
+Added Member To Class: ClassName=WLED_SCH Member=Component C1 1000uF/25V
+Added Member To Class: ClassName=WLED_SCH Member=Component C2 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C3 22uF/16V
+Added Member To Class: ClassName=WLED_SCH Member=Component C5 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C6 10uF
+Added Member To Class: ClassName=WLED_SCH Member=Component C7 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component C8 100nF
+Added Member To Class: ClassName=WLED_SCH Member=Component D1 1N4007
+Added Member To Class: ClassName=WLED_SCH Member=Component P1 Header 4 - M
+Added Member To Class: ClassName=WLED_SCH Member=Component P2 Header 5P
+Added Member To Class: ClassName=WLED_SCH Member=Component R1 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R2 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R3 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component R4 10K
+Added Member To Class: ClassName=WLED_SCH Member=Component U1 LM1084ISX-5.0/NOPB
+Added Member To Class: ClassName=WLED_SCH Member=Component U3 SN74AHCT125N
+Added Room: Name=WLED_SCH

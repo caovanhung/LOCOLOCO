@@ -1,0 +1,14 @@
+Source PCB Design Dat_Mach_LED.PcbDoc contains embedded board array. It is recomended to generate individual BOM for each embedded board PCB design.
+
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [WLED.PrjPcb]
+   Generated File[Dat_Mach_LED.TXT]
+   Generated File[Dat_Mach_LED.LDP]
+   Generated File[Dat_Mach_LED.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 11:01:40 PM On 10/29/2023

@@ -1,0 +1,11 @@
+Added Component: Designator=M?(ESP-12E&F Module)
+Add component (AddParameter): Name = "Category"; Value = "MODULE"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "CompanyID"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MFR"; Value = "Espressif"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MPN"; Value = "ESP-12F"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "PinCount"; Value = "22"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Solder"; Value = "SMT"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "ESP-12F"; VariantName = "[No Variations]"
+Added Class: Name=WLED_SCH
+Added Room: Name=WLED_SCH

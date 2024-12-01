@@ -1,0 +1,8 @@
+Added Component: Designator=IC?(DIP24/W0.6)
+Add component (AddParameter): Name = "Copyright by"; Value = "VanDungEvn"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = "27C16"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=VCC Pin=IC?-21
+Added Pin To Net: NetName=VCC Pin=IC?-24
+Added Net: Name=VCC
+Added Member To Class: ClassName=WLED_SCH Member=Component IC? 27C16
+Added Room: Name=WLED_SCH

@@ -1,0 +1,4 @@
+Added Component: Designator=IC?(QTO-220)
+Add component (AddParameter): Name = "Value"; Value = "LM7805"; VariantName = "[No Variations]"
+Added Class: Name=WLED_SCH
+Added Room: Name=WLED_SCH
