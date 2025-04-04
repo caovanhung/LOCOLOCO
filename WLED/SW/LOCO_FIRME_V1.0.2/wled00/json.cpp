@@ -299,6 +299,7 @@ bool deserializeState(JsonObject root, byte callMode, byte presetId)
   netDebugEnabled = root[F("debug")] | netDebugEnabled;
   #endif
 
+  //Xử lý độ sáng và trạng thái bật/tắt
   bool onBefore = bri;
   getVal(root["bri"], &bri);
 
@@ -318,6 +319,7 @@ bool deserializeState(JsonObject root, byte callMode, byte presetId)
     }
   }
 
+  // 2.2 Xử lý thời gian transition
   long tr = -1;
   if (!presetId || currentPlaylist < 0) { //do not apply transition time from preset if playlist active, as it would override playlist transition times
     tr = root[F("transition")] | -1;
@@ -381,6 +383,7 @@ bool deserializeState(JsonObject root, byte callMode, byte presetId)
     }
   }
 
+  // 2.3 Xử lý segment
   int it = 0;
   JsonVariant segVar = root["seg"];
   if (!segVar.isNull()) {
@@ -486,6 +489,7 @@ bool deserializeState(JsonObject root, byte callMode, byte presetId)
     //if (restart) forceReconnect = true;
   }
 
+  // 2.4 Cập nhật trạng thái
   stateUpdated(callMode);
   if (presetToRestore) currentPreset = presetToRestore;
 

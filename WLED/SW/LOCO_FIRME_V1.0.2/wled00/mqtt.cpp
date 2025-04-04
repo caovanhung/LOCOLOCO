@@ -59,7 +59,7 @@ static void onMqttConnect(bool sessionPresent)
 static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   static char *payloadStr;
 
-  DEBUG_PRINTF_P(PSTR("MQTT msg: %s\n"), topic);
+  DEBUG_PRINTF_P(PSTR("MQTT msg: %s with payload: %s\n"), topic, payload);
 
   // paranoia check to avoid npe if no payload
   if (payload==nullptr) {
@@ -184,6 +184,7 @@ void publishMqtt()
   XML_response(pbuf);
   strlcpy(subuf, mqttDeviceTopic, MQTT_MAX_TOPIC_LEN + 1);
   strcat_P(subuf, PSTR("/v"));
+  DEBUG_PRINTF_P(PSTR("MQTT PUB: %s \n"), buf.data());
   mqtt->publish(subuf, 0, retainMqttMsg, buf.data(), pbuf.size());   // optionally retain message (#2263)
   #endif
 }

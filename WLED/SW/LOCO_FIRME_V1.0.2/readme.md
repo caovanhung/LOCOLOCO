@@ -539,3 +539,371 @@ build_flags =
    - Chế độ ban đêm (độ sáng thấp)
 
 Bạn cần thêm thông tin chi tiết về phần nào không?
+
+# ĐIỀU KHIỂN WLED TỪ ĐIỆN THOẠI
+## Bản tin WLED NHẬN ĐƯỢC TỪ ĐIỆN THOẠI
+```JSON
+{
+  "seg": {
+    "fx": 1,
+    "fxdef": true
+  },
+  "v": true,
+  "time": 1743754463
+}
+```
+Hãy phân tích từng thành phần:
+seg (Segment):
+fx: 1 - Đây là ID của hiệu ứng (effect). Mỗi số tương ứng với một hiệu ứng khác nhau trong WLED
+fxdef: true - Cho biết đang sử dụng cài đặt mặc định cho hiệu ứng này
+v (Verbose):
+v: true - Yêu cầu phản hồi đầy đủ từ WLED, bao gồm trạng thái hiện tại
+time:
+time: 1743754463 - Timestamp Unix, được sử dụng để đồng bộ và theo dõi thời gian gửi lệnh
+Ý nghĩa của bản tin này:
+Đây là một lệnh thay đổi hiệu ứng LED
+Yêu cầu chuyển sang hiệu ứng số 1 với cài đặt mặc định
+Yêu cầu WLED phản hồi lại trạng thái đầy đủ sau khi thực hiện thay đổi
+Timestamp được đính kèm để theo dõi thời gian gửi lệnh
+Để xem hiệu ứng số 1 là gì, tôi sẽ tìm kiếm trong mã nguồn:
+Dựa vào kết quả tìm kiếm, tôi có thể giải thích chi tiết bản tin JSON:
+Hiệu ứng được yêu cầu (fx=1) là "Blink" - một hiệu ứng nhấp nháy đơn giản:
+Chuyển đổi giữa hai màu (color1 và color2)
+Tốc độ nhấp nháy có thể điều chỉnh thông qua tham số speed
+Chu kỳ sáng/tắt có thể điều chỉnh thông qua tham số intensity (duty cycle)
+fxdef: true - Sử dụng cài đặt mặc định cho hiệu ứng này:
+Speed: DEFAULT_SPEED
+Intensity: DEFAULT_INTENSITY
+Custom1: DEFAULT_C1
+Custom2: DEFAULT_C2
+Custom3: DEFAULT_C3
+Các tham số khác như check1, check2, check3 được đặt về false
+v: true - Yêu cầu phản hồi đầy đủ:
+WLED sẽ gửi lại toàn bộ trạng thái hiện tại sau khi áp dụng hiệu ứng
+Bao gồm thông tin về màu sắc, độ sáng, và các cài đặt khác
+time: 1743754463 - Timestamp Unix:
+Dùng để đồng bộ và theo dõi thời gian gửi lệnh
+Giúp phân biệt các lệnh khác nhau
+Có thể dùng để xử lý theo thứ tự thời gian
+Hiệu ứng Blink này sẽ:
+Chuyển đổi giữa hai màu đã cài đặt
+Sử dụng tốc độ và chu kỳ mặc định
+Có thể điều chỉnh sau thông qua các lệnh khác
+Phản hồi lại trạng thái đầy đủ sau khi áp dụng
+
+## Bản tin WLED GỬI PHẢN HỒI LÊN ĐIỆN THOẠI
+```JSON
+{
+"state": {
+  // Thông tin cơ bản
+  "on": true,                // Trạng thái bật/tắt
+  "bri": 128,               // Độ sáng (0-255)
+  "transition": 7,          // Thời gian chuyển cảnh (giây)
+  "bs": 0,                  // Blending style
+  "ps": -1,                 // Preset ID (-1 = không có preset)
+  "pl": -1,                 // Playlist ID (-1 = không có playlist)
+  "ledmap": 0,              // LED mapping đang dùng
+
+  // Audio Reactive
+  "AudioReactive": {
+    "on": false             // Trạng thái phản ứng âm thanh
+  },
+
+  // Night Light
+  "nl": {
+    "on": false,            // Trạng thái đèn ngủ
+    "dur": 60,              // Thời gian (phút)
+    "mode": 1,              // Chế độ
+    "tbri": 0,              // Độ sáng mục tiêu
+    "rem": -1               // Thời gian còn lại
+  },
+
+  // UDP Notification
+  "udpn": {
+    "send": false,          // Gửi thông báo
+    "recv": true,           // Nhận thông báo
+    "sgrp": 1,             // Nhóm gửi
+    "rgrp": 1              // Nhóm nhận
+  },
+
+  "lor": 0,                 // Live override
+  "mainseg": 0,            // Segment chính
+
+  // Thông tin segment
+  "seg": [{
+    "id": 0,               // ID segment
+    "start": 0,            // LED bắt đầu
+    "stop": 30,            // LED kết thúc
+    "len": 30,             // Số LED
+    "grp": 1,              // Nhóm LED
+    "spc": 0,              // Khoảng cách
+    "of": 0,               // Offset
+    "on": true,            // Trạng thái
+    "frz": false,          // Đóng băng hiệu ứng
+    "bri": 255,            // Độ sáng segment
+    "cct": 127,            // Nhiệt độ màu
+    "set": 0,              // Settings
+    "col": [               // Màu sắc
+      [255,160,0],        // Màu chính (cam)
+      [0,0,0],            // Màu phụ
+      [0,0,0]             // Màu thứ 3
+    ],
+    "fx": 1,               // ID hiệu ứng
+    "sx": 128,             // Tốc độ hiệu ứng
+    "ix": 128,             // Cường độ hiệu ứng
+    "pal": 0,              // ID palette màu
+    "c1": 128,             // Custom 1
+    "c2": 128,             // Custom 2
+    "c3": 16,              // Custom 3
+    "sel": true,           // Đã chọn
+    "rev": false,          // Đảo ngược
+    "mi": false,           // Mirror
+    "o1": false,           // Option 1
+    "o2": false,           // Option 2
+    "o3": false,           // Option 3
+    "si": 0,               // Sound simulation
+    "m12": 0               // Map 1D to 2D
+  }]
+},
+"info": {
+  // Thông tin phiên bản
+  "ver": "0.16.0-alpha",    // Phiên bản WLED
+  "vid": 2412040,           // Version ID
+  "cn": "Niji",             // Codename
+  "release": "ESP32",       // Platform
+
+  // Thông tin LED
+  "leds": {
+    "count": 30,            // Tổng số LED
+    "pwr": 120,             // Công suất hiện tại (mA)
+    "fps": 44,              // Frames per second
+    "maxpwr": 850,          // Công suất tối đa (mA)
+    "maxseg": 32,           // Số segment tối đa
+    "bootps": 0,            // Boot preset
+    "seglc": [1],           // Segment light capabilities
+    "lc": 1,                // Light capabilities
+    "rgbw": false,          // Hỗ trợ RGBW
+    "wv": 0,                // White value
+    "cct": 0                // CCT support
+  },
+
+  // Thông tin phần cứng
+  "i2c": [-1,-1],           // I2C pins
+  "spi": [-1,-1,-1],        // SPI pins
+  
+  // Thông tin thiết bị
+  "name": "WLED",           // Tên thiết bị
+  "brand": "LOCOLOCO",      // Thương hiệu
+  "product": "LED_2D",      // Sản phẩm
+  "mac": "ec64c991bcb0",    // Địa chỉ MAC
+  "ip": "192.168.110.47",   // Địa chỉ IP
+
+  // Thông tin WiFi
+  "wifi": {
+    "bssid": "EE:B9:70:8B:45:11",
+    "rssi": -49,            // Cường độ tín hiệu
+    "signal": 100,          // Chất lượng tín hiệu
+    "channel": 1,           // Kênh WiFi
+    "ap": false,            // Mode AP
+    "txPower": 62,          // Công suất phát
+    "sleep": false          // Sleep mode
+  },
+
+  // Thông tin hệ thống
+  "arch": "esp32",          // Kiến trúc
+  "core": "v3.3.6-16-gcc5440f6a2", // Phiên bản core
+  "clock": 240,             // Tốc độ CPU (MHz)
+  "flash": 4,               // Dung lượng flash (MB)
+  "freeheap": 189500,       // Bộ nhớ heap còn trống
+  "uptime": 28,             // Thời gian hoạt động (giây)
+  "time": "2025-4-4, 08:41:48" // Thời gian hiện tại
+}
+}
+```
+
+## Toàn bộ quy trình từ khi nhận bản tin điều khiển từ WS đến khi WLED xử lý và phản hồi WS
+Tôi sẽ phân tích chi tiết toàn bộ quy trình xử lý bản tin WebSocket trong WLED:
+
+### 1. Nhận Bản Tin WebSocket
+Trong file `ws.cpp`:
+
+```cpp
+void wsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len) {
+  if(type == WS_EVT_DATA) {
+    AwsFrameInfo * info = (AwsFrameInfo*)arg;
+    if(info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT) {
+      // 1. Kiểm tra và lấy JSON buffer
+      if (!requestJSONBufferLock(11)) {
+        client->text(F("{\"error\":3}")); // ERR_NOBUF
+        return;
+      }
+
+      // 2. Parse JSON
+      DeserializationError error = deserializeJson(*pDoc, data, len);
+      JsonObject root = pDoc->as<JsonObject>();
+      
+      // 3. Xử lý dữ liệu
+      if (!error && !root.isNull()) {
+        bool verboseResponse = deserializeState(root);
+        if (verboseResponse) {
+          sendDataWs(client); // Gửi phản hồi đầy đủ
+        } else {
+          client->text(F("{\"success\":true}")); // Phản hồi đơn giản
+        }
+      }
+      releaseJSONBufferLock();
+    }
+  }
+}
+```
+
+### 2. Xử Lý State (deserializeState)
+Trong file `json.cpp`:
+
+```cpp
+bool deserializeState(JsonObject root, byte callMode = CALL_MODE_DIRECT_CHANGE) {
+  bool stateResponse = root[F("v")] | false;
+
+  // 2.1 Xử lý độ sáng và trạng thái bật/tắt
+  bool onBefore = bri;
+  getVal(root["bri"], &bri);
+  bool on = root["on"] | (bri > 0);
+  if (!on != !bri) toggleOnOff();
+
+  // 2.2 Xử lý thời gian transition
+  long tr = root[F("transition")] | -1;
+  if (tr >= 0) {
+    transitionDelay = tr * 100;
+    strip.setTransition(transitionDelay);
+  }
+
+  // 2.3 Xử lý segment
+  JsonArray seg = root["seg"];
+  if (!seg.isNull()) {
+    for (JsonObject elem : seg) {
+      deserializeSegment(elem, elem["id"] | 0);
+    }
+  }
+
+  // 2.4 Cập nhật trạng thái
+  stateUpdated(callMode);
+  return stateResponse;
+}
+```
+
+### 3. Xử Lý Segment (deserializeSegment)
+```cpp
+bool deserializeSegment(JsonObject elem, byte id) {
+  if (id >= strip.getMaxSegments()) return false;
+  Segment& seg = strip.getSegment(id);
+
+  // 3.1 Cập nhật thông số segment
+  uint16_t start = elem["start"] | seg.start;
+  uint16_t stop = elem["stop"] | seg.stop;
+  uint8_t grp = elem["grp"] | seg.grouping;
+  uint16_t spc = elem[F("spc")] | seg.spacing;
+  
+  // 3.2 Cập nhật màu sắc
+  JsonArray colarr = elem["col"];
+  if (!colarr.isNull()) {
+    for (uint8_t i = 0; i < 3; i++) {
+      JsonArray colX = colarr[i];
+      if (!colX.isNull()) {
+        seg.colors[i] = RGBW32(colX[0], colX[1], colX[2], colX[3]);
+      }
+    }
+  }
+
+  // 3.3 Cập nhật hiệu ứng
+  uint8_t fx = elem["fx"] | seg.mode;
+  uint8_t sx = elem["sx"] | seg.speed;
+  uint8_t ix = elem["ix"] | seg.intensity;
+  
+  seg.setMode(fx, sx, ix);
+}
+```
+
+### 4. Cập Nhật LED (stateUpdated)
+Trong file `led.cpp`:
+
+```cpp
+void stateUpdated(byte callMode) {
+  // 4.1 Cập nhật giao diện
+  if (callMode != CALL_MODE_NO_NOTIFY) {
+    notify(callMode);
+    interfaceUpdateCallMode = callMode;
+  }
+
+  // 4.2 Lưu trạng thái
+  if (callMode != CALL_MODE_PRESET_NO_SAVE && currentPreset > 0) {
+    savedPresets = false;
+  }
+
+  // 4.3 Kích hoạt cập nhật LED
+  if (bri > 0) strip.trigger();
+}
+```
+
+### 5. Tạo Phản Hồi (sendDataWs)
+```cpp
+void sendDataWs(AsyncWebSocketClient * client) {
+  // 5.1 Tạo JSON response
+  JsonObject state = pDoc->createNestedObject("state");
+  serializeState(state);
+  JsonObject info = pDoc->createNestedObject("info");
+  serializeInfo(info);
+
+  // 5.2 Gửi phản hồi
+  size_t len = measureJson(*pDoc);
+  AsyncWebSocketMessageBuffer * buffer = ws.makeBuffer(len);
+  serializeJson(*pDoc, (char *)buffer->get(), len);
+  client->text(buffer);
+}
+```
+
+### 6. Serialize State
+```cpp
+void serializeState(JsonObject root) {
+  // 6.1 Thông tin cơ bản
+  root["on"] = (bri > 0);
+  root["bri"] = briLast;
+  root[F("transition")] = transitionDelay/100;
+
+  // 6.2 Thông tin segment
+  JsonArray seg = root.createNestedArray("seg");
+  for (size_t s = 0; s < strip.getMaxSegments(); s++) {
+    if (strip.getSegment(s).isActive()) {
+      JsonObject seg0 = seg.createNestedObject();
+      serializeSegment(seg0, strip.getSegment(s), s);
+    }
+  }
+}
+```
+
+### 7. Serialize Info
+```cpp
+void serializeInfo(JsonObject root) {
+  // 7.1 Thông tin phiên bản
+  root[F("ver")] = versionString;
+  root[F("vid")] = VERSION;
+
+  // 7.2 Thông tin LED
+  JsonObject leds = root.createNestedObject("leds");
+  leds[F("count")] = strip.getLengthTotal();
+  leds[F("pwr")] = strip.currentMilliamps;
+  leds["fps"] = strip.getFps();
+
+  // 7.3 Thông tin hệ thống
+  root[F("fs")] = freeHeap;
+  root[F("uptime")] = millis()/1000;
+  // ...
+}
+```
+
+Quy trình này đảm bảo:
+1. Xử lý an toàn dữ liệu JSON
+2. Cập nhật trạng thái hệ thống
+3. Điều khiển LED theo yêu cầu
+4. Phản hồi đầy đủ thông tin cho client
+
+Bạn muốn tìm hiểu sâu hơn về phần nào trong quy trình này?

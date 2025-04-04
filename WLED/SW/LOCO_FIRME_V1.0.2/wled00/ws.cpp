@@ -28,6 +28,13 @@ void wsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
       // the whole message is in a single frame and we got all of its data (max. 1450 bytes)
       if(info->opcode == WS_TEXT)
       {
+        // In ra nội dung JSON message
+        DEBUG_PRINT("Received JSON from WS: ");
+        for(size_t i=0; i < len; i++) {
+          DEBUG_PRINT((char)data[i]); 
+        }
+        DEBUG_PRINTLN();
+
         if (len > 0 && len < 10 && data[0] == 'p') {
           // application layer ping/pong heartbeat.
           // client-side socket layer ping packets are unanswered (investigate)
@@ -120,6 +127,11 @@ void sendDataWs(AsyncWebSocketClient * client)
   JsonObject info  = pDoc->createNestedObject("info");
   serializeInfo(info);
 
+  // Thêm dòng debug để in ra Serial
+  DEBUG_PRINTLN("Sending WS response:");
+  serializeJson(*pDoc, Serial);
+  DEBUG_PRINTLN();
+  
   size_t len = measureJson(*pDoc);
   DEBUG_PRINTF_P(PSTR("JSON buffer size: %u for WS request (%u).\n"), pDoc->memoryUsage(), len);
 
