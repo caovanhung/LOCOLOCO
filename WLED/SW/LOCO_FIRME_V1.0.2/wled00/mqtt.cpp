@@ -82,7 +82,7 @@ static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProp
     DEBUG_PRINTLN(F("MQTT partial packet received."));
     return; // process next packet
   }
-  DEBUG_PRINTLN(payloadStr);
+  DEBUG_PRINTF_P(PSTR("payloadStr: %s\n"), payloadStr);
 
   size_t topicPrefixLen = strlen(mqttDeviceTopic);
   if (strncmp(topic, mqttDeviceTopic, topicPrefixLen) == 0) {
@@ -194,8 +194,15 @@ void publishMqtt()
 
 bool initMqtt()
 {
+  DEBUG_PRINTLN(F("Init MQTT..."));
+ DEBUG_PRINT(F("MQTT Init Check - Enabled: "));
+  DEBUG_PRINT(mqttEnabled);
+  DEBUG_PRINT(F(", Server: "));
+  DEBUG_PRINT(mqttServer);
+  DEBUG_PRINT(F(", Network Connected: "));
+  DEBUG_PRINTLN(WLED_CONNECTED);
   if (!mqttEnabled || mqttServer[0] == 0 || !WLED_CONNECTED) return false;
-
+  DEBUG_PRINTLN(F("Init MQTT start.."));
   if (mqtt == nullptr) {
     mqtt = new AsyncMqttClient();
     if (!mqtt) return false;

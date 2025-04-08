@@ -275,6 +275,45 @@ void initServer()
   });
 
   server.on(F("/settings"), HTTP_POST, [](AsyncWebServerRequest *request){
+    // In thông tin cơ bản của request
+    DEBUG_PRINTLN(F("\n==== NEW HTTP REQUEST ===="));
+    DEBUG_PRINTF_P(PSTR("From IP: %s\n"), request->client()->remoteIP().toString().c_str());
+    DEBUG_PRINTF_P(PSTR("Method: %s\n"), request->methodToString());
+    DEBUG_PRINTF_P(PSTR("URL: %s\n"), request->url().c_str());
+    
+    // In chi tiết headers
+    DEBUG_PRINTLN(F("\n-- Headers --"));
+    int headers = request->headers();
+    DEBUG_PRINTF_P(PSTR("Total headers: %d\n"), headers);
+    for(int i=0; i<headers; i++) {
+        AsyncWebHeader* h = request->getHeader(i);
+        DEBUG_PRINTF_P(PSTR("[%d] %s: %s\n"), i, h->name().c_str(), h->value().c_str());
+    }
+    
+    // In chi tiết parameters
+    DEBUG_PRINTLN(F("\n-- Parameters --"));
+    int params = request->params();
+    DEBUG_PRINTF_P(PSTR("Total parameters: %d\n"), params);
+    for(int i=0; i<params; i++) {
+        AsyncWebParameter* p = request->getParam(i);
+        if(p->isFile()){
+            DEBUG_PRINTF_P(PSTR("[%d] FILE[%s]: size: %u\n"), i, p->name().c_str(), p->size());
+        } else if(p->isPost()){
+            DEBUG_PRINTF_P(PSTR("[%d] POST[%s]: %s\n"), i, p->name().c_str(), p->value().c_str());
+        } else {
+            DEBUG_PRINTF_P(PSTR("[%d] GET[%s]: %s\n"), i, p->name().c_str(), p->value().c_str());
+        }
+    }
+
+    // In content type nếu có
+    if(request->contentType()){
+        DEBUG_PRINTLN(F("\n-- Content --"));
+        DEBUG_PRINTF_P(PSTR("Content-Type: %s\n"), request->contentType().c_str());
+    }
+    
+    DEBUG_PRINTLN(F("\n==== END REQUEST ====\n"));
+    DEBUG_PRINTLN(F("----------------------------------------"));
+
     serveSettings(request, true);
   });
 
@@ -284,6 +323,30 @@ void initServer()
   });
 
   AsyncCallbackJsonWebHandler* handler = new AsyncCallbackJsonWebHandler(FPSTR(_json), [](AsyncWebServerRequest *request) {
+    DEBUG_PRINTLN(F("JSON API Request received:"));
+    if (!requestJSONBufferLock(14)) {
+        DEBUG_PRINTLN(F("Buffer lock failed"));
+        request->deferResponse();
+        return;
+    }
+
+    DeserializationError error_1 = deserializeJson(*pDoc, (uint8_t*)(request->_tempObject));
+    JsonObject root_1 = pDoc->as<JsonObject>();
+    if (error_1 || root_1.isNull()) {
+        DEBUG_PRINT(F("JSON parse error: "));
+        DEBUG_PRINTLN(error_1.c_str());
+        releaseJSONBufferLock();
+        serveJsonError(request, 400, ERR_JSON);
+        return;
+    }
+
+    // In ra JSON nhận được
+    DEBUG_PRINT(F("Received JSON: "));
+    serializeJson(root_1, Serial);
+    DEBUG_PRINTLN();
+
+    // Tiếp tục xử lý bình thường
+
     bool verboseResponse = false;
     bool isConfig = false;
 

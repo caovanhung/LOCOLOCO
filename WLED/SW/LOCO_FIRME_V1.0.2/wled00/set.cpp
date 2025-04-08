@@ -735,6 +735,19 @@ void handleSettingsSet(AsyncWebServerRequest *request, byte subPage)
 //HTTP API request parser
 bool handleSet(AsyncWebServerRequest *request, const String& req, bool apply)
 {
+  DEBUG_PRINTLN(F("Handle Set Request:"));
+  DEBUG_PRINTF("URL: %s\n", req.c_str());
+  
+  if (request != nullptr) {
+      DEBUG_PRINTLN(F("Parameters:"));
+      int params = request->params();
+      for(int i=0; i<params; i++) {
+          AsyncWebParameter* p = request->getParam(i);
+          DEBUG_PRINTF("  %s: %s\n", p->name().c_str(), p->value().c_str());
+      }
+  }
+
+
   if (!(req.indexOf("win") >= 0)) return false;
 
   int pos = 0;

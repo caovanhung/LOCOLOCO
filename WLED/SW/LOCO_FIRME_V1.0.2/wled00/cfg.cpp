@@ -1016,7 +1016,15 @@ void serializeConfig() {
   UsermodManager::addToConfig(usermods_settings);
 
   File f = WLED_FS.open(FPSTR(s_cfg_json), "w");
-  if (f) serializeJson(root, f);
+  if (f) {
+    // Thêm debug để in nội dung JSON
+    String jsonStr;
+    serializeJson(root, jsonStr);
+    DEBUG_PRINTLN(F("cfg.json content:"));
+    DEBUG_PRINTLN(jsonStr);
+    
+    serializeJson(root, f);
+  }
   f.close();
   releaseJSONBufferLock();
 
@@ -1111,7 +1119,15 @@ void serializeConfigSec() {
   ota[F("aota")] = aOtaEnabled;
 
   File f = WLED_FS.open(FPSTR(s_wsec_json), "w");
-  if (f) serializeJson(root, f);
+  if (f) {
+    // Thêm debug để in nội dung JSON
+    String jsonStr;
+    serializeJson(root, jsonStr); 
+    DEBUG_PRINTLN(F("wsec.json content:"));
+    DEBUG_PRINTLN(jsonStr);
+    
+    serializeJson(root, f);
+  }
   f.close();
   releaseJSONBufferLock();
 }

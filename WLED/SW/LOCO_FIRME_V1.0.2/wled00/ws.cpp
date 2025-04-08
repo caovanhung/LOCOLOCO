@@ -22,19 +22,19 @@ void wsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
     if (client->id() == wsLiveClientId) wsLiveClientId = 0;
     DEBUG_PRINTLN(F("WS client disconnected."));
   } else if(type == WS_EVT_DATA){
+    // In ra nội dung JSON message
+    DEBUG_PRINT("Received JSON from WS: ");
+    for(size_t i=0; i < len; i++) {
+      DEBUG_PRINT((char)data[i]); 
+    }
+    DEBUG_PRINTLN();
+
     // data packet
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     if(info->final && info->index == 0 && info->len == len){
       // the whole message is in a single frame and we got all of its data (max. 1450 bytes)
       if(info->opcode == WS_TEXT)
       {
-        // In ra nội dung JSON message
-        DEBUG_PRINT("Received JSON from WS: ");
-        for(size_t i=0; i < len; i++) {
-          DEBUG_PRINT((char)data[i]); 
-        }
-        DEBUG_PRINTLN();
-
         if (len > 0 && len < 10 && data[0] == 'p') {
           // application layer ping/pong heartbeat.
           // client-side socket layer ping packets are unanswered (investigate)
@@ -71,21 +71,9 @@ void wsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
             // we have to send something back otherwise WS connection closes
             client->text(F("{\"success\":true}"));
           }
-          // force broadcast in 500ms after updating client
-          //lastInterfaceUpdate = millis() - (INTERFACE_UPDATE_COOLDOWN -500); // ESP8266 does not like this
         }
       }
     } else {
-      //message is comprised of multiple frames or the frame is split into multiple packets
-      //if(info->index == 0){
-        //if (!wsFrameBuffer && len < 4096) wsFrameBuffer = new uint8_t[4096];
-      //}
-
-      //if (wsFrameBuffer && len < 4096 && info->index + info->)
-      //{
-
-      //}
-
       if((info->index + len) == info->len){
         if(info->final){
           if(info->message_opcode == WS_TEXT) {

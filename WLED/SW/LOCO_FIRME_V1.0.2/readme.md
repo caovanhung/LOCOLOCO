@@ -6,6 +6,67 @@
 - **Nền tảng**: ESP32-WROOM-IE
 - **Framework**: Arduino/ESP-IDF
 
+Tôi sẽ tìm kiếm các phương thức giao tiếp khác trong WLED:
+
+Search files...
+Dựa trên kết quả tìm kiếm, tôi thấy WLED hỗ trợ nhiều phương thức giao tiếp khác nhau:
+
+1. HTTP API:
+- Endpoint chính: `/json`
+- Các sub-endpoints:
+  - `/json/state` - Trạng thái hiện tại
+  - `/json/info` - Thông tin hệ thống
+  - `/json/si` - State và Info
+  - `/json/nodes` - Thông tin các node
+  - `/json/eff` - Hiệu ứng
+  - `/json/palx` - Bảng màu
+  - `/json/fxda` - Dữ liệu hiệu ứng
+  - `/json/net` - Cài đặt mạng
+  - `/json/cfg` - Cấu hình
+
+2. MQTT:
+- Topic chính: `wled/<deviceid>`
+- Các sub-topics:
+  - `/col` - Điều khiển màu sắc
+  - `/api` - API JSON
+  - Các topic tùy chỉnh cho usermod
+
+3. WebSocket:
+- Endpoint: `/ws`
+- Hỗ trợ gửi/nhận dữ liệu realtime
+
+4. Serial API:
+- Hỗ trợ giao tiếp qua cổng Serial
+- Các lệnh JSON và binary
+- Điều khiển LED trực tiếp
+
+5. UDP API:
+- Hỗ trợ điều khiển qua UDP
+- Các lệnh JSON và HTTP API
+
+6. HTTP Pull:
+- Cho phép WLED pull dữ liệu từ server HTTP khác
+- Hỗ trợ JSON response
+
+7. RF433:
+- Điều khiển qua tín hiệu RF 433MHz
+- Cấu hình qua file remote433.json
+
+8. Alexa API:
+- Tích hợp với Amazon Alexa
+- Điều khiển bằng giọng nói
+
+Mỗi phương thức có ưu điểm riêng:
+- HTTP API: RESTful, dễ sử dụng
+- MQTT: Realtime, nhẹ
+- WebSocket: Realtime, 2 chiều
+- Serial: Tốc độ cao, local
+- UDP: Nhanh, broadcast
+- HTTP Pull: Pull-based
+- RF433: Điều khiển từ xa
+- Alexa: Giọng nói
+
+
 ## 2. Cấu Trúc Dự Án
 
 ### 2.1 File Cốt Lõi
@@ -907,3 +968,177 @@ Quy trình này đảm bảo:
 4. Phản hồi đầy đủ thông tin cho client
 
 Bạn muốn tìm hiểu sâu hơn về phần nào trong quy trình này?
+
+# Tôi sẽ tóm tắt toàn bộ workflow của WLED từ khi bắt đầu đến khi điều khiển:
+
+1. **Khởi động và Kết nối Ban đầu**
+```mermaid
+graph TD
+    A[Khởi động WLED] --> B[Tạo Access Point]
+    B --> C[SSID: WLED-AP]
+    B --> D[Password: wled1234]
+    C --> E[Kết nối qua Web UI]
+    D --> E
+    E --> F[http://4.3.2.1]
+```
+
+2. **Cấu hình WiFi và Kết nối Mạng**
+```mermaid
+graph TD
+    A[Truy cập Config] --> B[WiFi Settings]
+    B --> C[Nhập SSID & Password]
+    C --> D[Lưu vào wsec.json]
+    D --> E[WLED kết nối WiFi]
+    E --> F[Nhận IP từ router]
+```
+
+3. **Cấu hình LED**
+```mermaid
+graph TD
+    A[LED Settings] --> B[Chọn loại LED]
+    B --> C[Cấu hình số lượng LED]
+    C --> D[Chọn GPIO pin]
+    D --> E[Cài đặt màu & độ sáng]
+    E --> F[Lưu vào cfg.json]
+```
+
+4. **Các Phương thức Điều khiển**
+
+a. **HTTP API**
+```plaintext
+- GET http://<wled-ip>/win  (Simple API)
+  - /win&T=1    (Bật)
+  - /win&T=0    (Tắt)
+  - /win&A=128  (Độ sáng)
+  - /win&CL=ff0000  (Màu)
+
+- POST http://<wled-ip>/json/state (JSON API)
+  {
+    "on": true,
+    "bri": 128,
+    "seg": [{"col":[[255,0,0]]}]
+  }
+```
+
+b. **WebSocket**
+```plaintext
+ws://<wled-ip>/ws
+- Realtime updates
+- Live preview
+- Instant control
+```
+
+c. **MQTT**
+```plaintext
+Topics:
+- wled/[deviceId]/c  (Control)
+- wled/[deviceId]/v  (Values)
+- wled/[deviceId]/s  (Status)
+```
+
+5. **Workflow Lưu trữ Cấu hình**
+```mermaid
+graph TD
+    A[Cấu hình] --> B[Lưu File]
+    B --> C[cfg.json]
+    B --> D[wsec.json]
+    C --> E[LED settings/Presets]
+    D --> F[WiFi/Security]
+```
+
+6. **Các File Cấu hình Chính**
+```plaintext
+/cfg.json
+- LED configuration
+- Network settings
+- MQTT settings
+- Hardware pins
+- Default values
+
+/wsec.json
+- WiFi passwords
+- Security credentials
+- API tokens
+```
+
+7. **Luồng Xử lý Request**
+```mermaid
+graph TD
+    A[Client Request] --> B{Type?}
+    B -->|HTTP| C[HTTP Handler]
+    B -->|WebSocket| D[WS Handler]
+    B -->|MQTT| E[MQTT Handler]
+    C --> F[Process Command]
+    D --> F
+    E --> F
+    F --> G[Update LED State]
+```
+
+8. **Debug và Monitoring**
+```plaintext
+Serial Monitor (115200 baud):
+- Network status
+- Command processing
+- Error messages
+- State changes
+```
+
+9. **Các Endpoint Chính**
+```plaintext
+/                 - Web Interface
+/settings         - Configuration
+/json/state      - State Control
+/json/info       - Device Info
+/win             - Simple Control
+/ws              - WebSocket
+/update          - OTA Update
+```
+
+10. **Quy trình Xử lý Lệnh**
+```mermaid
+graph TD
+    A[Nhận Command] --> B[Parse Data]
+    B --> C[Validate]
+    C --> D[Update State]
+    D --> E[Control LEDs]
+    E --> F[Send Response]
+    F --> G[Broadcast Update]
+```
+
+11. **Các Chức năng Chính**
+```plaintext
+1. LED Control
+   - On/Off
+   - Brightness
+   - Color
+   - Effects
+   - Segments
+
+2. Network
+   - WiFi
+   - MQTT
+   - HTTP API
+   - WebSocket
+
+3. Automation
+   - Schedules
+   - Presets
+   - Macros
+
+4. Sync
+   - UDP Sync
+   - MQTT Sync
+   - HTTP Sync
+```
+
+12. **Security Workflow**
+```mermaid
+graph TD
+    A[Access Request] --> B{Auth Required?}
+    B -->|Yes| C[Check Credentials]
+    B -->|No| D[Allow Access]
+    C -->|Valid| D
+    C -->|Invalid| E[Deny Access]
+```
+
+Đây là tổng quan về workflow của WLED. Mỗi phần có thể được đi sâu chi tiết hơn tùy theo nhu cầu của bạn. Bạn muốn tìm hiểu sâu hơn về phần nào?
