@@ -1142,3 +1142,213 @@ graph TD
 ```
 
 Đây là tổng quan về workflow của WLED. Mỗi phần có thể được đi sâu chi tiết hơn tùy theo nhu cầu của bạn. Bạn muốn tìm hiểu sâu hơn về phần nào?
+
+# Kiến trúc và Luồng Hoạt Động Hệ Thống
+
+## 1. Tổng Quan Hệ Thống
+- **Local Network**
+  - ESP Device (WLED Controller)
+  - Local Web Interface
+  - Local WebSocket Server
+  - Local Storage (SPIFFS/LittleFS)
+
+- **Cloud System**
+  - Cloud Server (MQTT Broker)
+  - Database
+  - WebSocket Server
+  - REST API
+  - Remote Client Interface
+
+## 2. Các Luồng Hoạt Động Chính
+
+### 2.1. Khởi động thiết bị
+1. **Khởi tạo local**
+   - Load cấu hình từ bộ nhớ local
+   - Khởi tạo LED strip
+   - Start WebSocket server local
+
+2. **Kết nối cloud**
+   - Kết nối WiFi
+   - Kết nối MQTT với cloud server
+   - Đăng ký thiết bị với cloud
+   - Đồng bộ trạng thái cuối cùng từ cloud
+
+### 2.2. Điều khiển Local
+1. **Client gửi lệnh**
+   - Local client kết nối WebSocket
+   - Gửi command tới ESP
+   - Format: `{type: "command", data: {...}}`
+
+2. **ESP xử lý**
+   - Nhận command qua WebSocket
+   - Cập nhật LED state
+   - Lưu state vào local storage
+   - Broadcast state mới cho local clients
+
+3. **Đồng bộ với Cloud**
+   - Gửi state update lên cloud qua MQTT
+   - Nhận confirmation từ cloud
+   - Queue changes nếu mất kết nối
+
+### 2.3. Điều khiển Remote
+1. **Remote client request**
+   - Gửi command tới cloud server
+   - Authentication với cloud
+   - Format: `{deviceId: "xxx", command: {...}}`
+
+2. **Cloud xử lý**
+   - Validate request
+   - Forward command tới device qua MQTT
+   - Update database state
+
+3. **ESP nhận command**
+   - Xử lý MQTT message
+   - Update LED state
+   - Confirm state change với cloud
+   - Broadcast cho local clients
+
+### 2.4. Xử lý Mất Kết Nối
+
+#### Offline Mode
+1. **Phát hiện mất kết nối**
+   - Timeout MQTT connection
+   - Switch sang local-only mode
+
+2. **Local Operation**
+   - Tiếp tục xử lý local commands
+   - Queue state changes
+   - Lưu changes vào local storage
+
+3. **Khôi phục kết nối**
+   - Reconnect MQTT
+   - Sync queued changes
+   - Resolve conflicts nếu có
+
+### 2.5. Đồng bộ Trạng thái
+
+#### Normal Sync
+1. **State Change**
+   ```json
+   {
+     "deviceId": "xxx",
+     "state": {
+       "on": true,
+       "brightness": 128,
+       "effect": 1,
+       "version": 123
+     },
+     "timestamp": 1234567890
+   }
+   ```
+
+2. **Sync Process**
+   - Save local state
+   - Send to cloud
+   - Wait for confirmation
+   - Update version number
+
+#### Conflict Resolution
+1. **Version Check**
+   - Compare state versions
+   - Check timestamps
+   - Resolve based on latest change
+
+2. **Merge Strategy**
+   - Keep newer changes
+   - Sync back to ensure consistency
+
+## 3. Giao Thức Giao Tiếp
+
+### 3.1. Local WebSocket
+```typescript
+interface WSMessage {
+    type: "command" | "state" | "sync";
+    data: {
+        command?: LEDCommand;
+        state?: DeviceState;
+        timestamp: number;
+    }
+}
+```
+
+### 3.2. MQTT Topics
+```plaintext
+device/{deviceId}/command    # Nhận lệnh
+device/{deviceId}/state     # Gửi state
+device/{deviceId}/status    # Online/offline status
+device/{deviceId}/sync      # Full state sync
+```
+
+## 4. Xử Lý Lỗi và Recovery
+
+### 4.1. Network Errors
+- Tự động reconnect WiFi
+- Retry MQTT connection
+- Queue commands khi offline
+
+### 4.2. State Sync Errors
+- Version control cho state
+- Timestamp-based conflict resolution
+- Forced sync khi cần
+
+### 4.3. Recovery Process
+1. Reconnect network
+2. Verify device registration
+3. Sync state with cloud
+4. Process queued commands
+5. Resume normal operation
+
+## 5. Bảo Mật
+
+### 5.1. Local Security
+- Local network access only
+- Optional local password
+- Token-based authentication
+
+### 5.2. Cloud Security
+- SSL/TLS for MQTT
+- JWT authentication
+- Device registration validation
+
+## 6. State Management
+
+### 6.1. Local State
+```json
+{
+    "device": {
+        "id": "unique-id",
+        "version": 123
+    },
+    "state": {
+        "on": true,
+        "brightness": 128,
+        "effect": 1
+    },
+    "config": {
+        "localControl": true,
+        "cloudSync": true
+    }
+}
+```
+
+### 6.2. Cloud State
+```json
+{
+    "deviceId": "unique-id",
+    "state": {
+        "version": 123,
+        "lastUpdate": "timestamp",
+        "data": {
+            "on": true,
+            "brightness": 128,
+            "effect": 1
+        }
+    },
+    "status": {
+        "online": true,
+        "lastSeen": "timestamp"
+    }
+}
+```
+
+Bạn cần tôi giải thích chi tiết phần nào không?
