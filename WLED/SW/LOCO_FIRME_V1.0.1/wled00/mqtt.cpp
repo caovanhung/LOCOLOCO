@@ -49,7 +49,7 @@ static void onMqttConnect(bool sessionPresent)
     mqtt->subscribe(subuf, 0);
   }
 
-  UsermodManager::onMqttConnect(sessionPresent);
+  // UsermodManager::onMqttConnect(sessionPresent);
 
   DEBUG_PRINTLN(F("MQTT ready"));
 
@@ -67,7 +67,7 @@ static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProp
   static char *payloadStr;
 
   DEBUG_PRINTF_P(PSTR("MQTT msg: %s\n"), topic);
-
+  DEBUG_PRINTF_P(PSTR("payload: %s\n"), payload);
   // paranoia check to avoid npe if no payload
   if (payload==nullptr) {
     DEBUG_PRINTLN(F("no payload -> leave"));
@@ -115,6 +115,8 @@ static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProp
   } else if (strcmp_P(topic, PSTR("/api")) == 0) {
     if (requestJSONBufferLock(15)) {
       if (payloadStr[0] == '{') { //JSON API
+        DEBUG_PRINTF_P(PSTR("payloadStr: %s\n"), payloadStr);
+        DEBUG_PRINTF_P(PSTR("topic: %s\n"), topic);
         deserializeJson(*pDoc, payloadStr);
         deserializeState(pDoc->as<JsonObject>());
       } else { //HTTP API
@@ -165,7 +167,7 @@ class bufferPrint : public Print {
 void publishMqtt()
 {
   if (!WLED_MQTT_CONNECTED) return;
-  DEBUG_PRINTLN(F("Publish MQTT"));
+  // DEBUG_PRINTLN(F("Publish MQTT"));
 
   #ifndef USERMOD_SMARTNEST
   char s[10];

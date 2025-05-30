@@ -9,6 +9,9 @@
 // version code in format yymmddb (b = daily build)
 #define VERSION 2412040
 #define WLED_DEBUG
+#define WLED_DEBUG_FS
+#define WLED_DISABLE_2D
+
 //uncomment this if you have a "my_config.h" file you'd like to use
 //#define WLED_USE_MY_CONFIG
 

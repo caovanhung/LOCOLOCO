@@ -296,14 +296,15 @@ bool deserializeSegment(JsonObject elem, byte it, byte presetId)
 bool deserializeState(JsonObject root, byte callMode, byte presetId)
 {
   bool stateResponse = root[F("v")] | false;
-
-  #if defined(WLED_DEBUG) && defined(WLED_DEBUG_HOST)
-  netDebugEnabled = root[F("debug")] | netDebugEnabled;
-  #endif
-
   bool onBefore = bri;
+
   getVal(root["bri"], &bri);
 
+  #if defined(WLED_DEBUG) 
+  DEBUG_PRINTF_P(PSTR("on: %s \n"), root["on"]);
+  DEBUG_PRINTF_P(PSTR("onBefore: %d\n"), onBefore);
+  DEBUG_PRINTF_P(PSTR("bri: %d\n"), bri);
+  #endif
   bool on = root["on"] | (bri > 0);
   if (!on != !bri) toggleOnOff();
 

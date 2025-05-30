@@ -26,9 +26,9 @@
 
 //Defaults
 #define DEFAULT_CLIENT_SSID "Your_Network"
-#define DEFAULT_AP_SSID     WLED_BRAND "-AP"
-#define DEFAULT_AP_PASS     "wled1234"
-#define DEFAULT_OTA_PASS    "wledota"
+#define DEFAULT_AP_SSID     WLED_BRAND "BK_START"
+#define DEFAULT_AP_PASS     "BK_START"
+#define DEFAULT_OTA_PASS    "12345678"
 #define DEFAULT_MDNS_NAME   "x"
 
 //increase if you need more

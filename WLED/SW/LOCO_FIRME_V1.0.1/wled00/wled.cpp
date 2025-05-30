@@ -258,116 +258,33 @@ void WLED::loop()
 #endif        // WLED_DEBUG
 }
 
-#if WLED_WATCHDOG_TIMEOUT > 0
-void WLED::enableWatchdog() {
-  #ifdef ARDUINO_ARCH_ESP32
-  esp_err_t watchdog = esp_task_wdt_init(WLED_WATCHDOG_TIMEOUT, true);
-  DEBUG_PRINT(F("Watchdog enabled: "));
-  if (watchdog == ESP_OK) {
-    DEBUG_PRINTLN(F("OK"));
-  } else {
-    DEBUG_PRINTLN(watchdog);
-    return;
-  }
-  esp_task_wdt_add(NULL);
-  #else
-  ESP.wdtEnable(WLED_WATCHDOG_TIMEOUT * 1000);
-  #endif
-}
-
-void WLED::disableWatchdog() {
-  DEBUG_PRINTLN(F("Watchdog: disabled"));
-  #ifdef ARDUINO_ARCH_ESP32
-  esp_task_wdt_delete(NULL);
-  #else
-  ESP.wdtDisable();
-  #endif
-}
-#endif
 
 void WLED::setup()
 {
 
   Serial.begin(115200);
-  #if !ARDUINO_USB_CDC_ON_BOOT
   Serial.setTimeout(50);  // this causes troubles on new MCUs that have a "virtual" USB Serial (HWCDC)
-  #else
-  #endif
-  DEBUG_PRINTLN();
-  DEBUG_PRINTF_P(PSTR("---WLED %s %u INIT---\n"), versionString, VERSION);
-  DEBUG_PRINTLN();
-#ifdef ARDUINO_ARCH_ESP32
-  DEBUG_PRINTF_P(PSTR("esp32 %s\n"), ESP.getSdkVersion());
-  #if defined(ESP_ARDUINO_VERSION)
-    DEBUG_PRINTF_P(PSTR("arduino-esp32 v%d.%d.%d\n"), int(ESP_ARDUINO_VERSION_MAJOR), int(ESP_ARDUINO_VERSION_MINOR), int(ESP_ARDUINO_VERSION_PATCH));  // available since v2.0.0
-  #else
-    DEBUG_PRINTLN(F("arduino-esp32 v1.0.x\n"));  // we can't say in more detail.
-  #endif
-  DEBUG_PRINTF_P(PSTR("CPU:   %s rev.%d, %d core(s), %d MHz.\n"), ESP.getChipModel(), (int)ESP.getChipRevision(), ESP.getChipCores(), ESP.getCpuFreqMHz());
-  DEBUG_PRINTF_P(PSTR("FLASH: %d MB, Mode %d "), (ESP.getFlashChipSize()/1024)/1024, (int)ESP.getFlashChipMode());
-  #ifdef WLED_DEBUG
-  switch (ESP.getFlashChipMode()) {
-    // missing: Octal modes
-    case FM_QIO:  DEBUG_PRINT(F("(QIO)")); break;
-    case FM_QOUT: DEBUG_PRINT(F("(QOUT)"));break;
-    case FM_DIO:  DEBUG_PRINT(F("(DIO)")); break;
-    case FM_DOUT: DEBUG_PRINT(F("(DOUT)"));break;
-    #if defined(CONFIG_IDF_TARGET_ESP32S3) && CONFIG_ESPTOOLPY_FLASHMODE_OPI
-    case FM_FAST_READ: DEBUG_PRINT(F("(OPI)")); break;
-    #else
-    case FM_FAST_READ: DEBUG_PRINT(F("(fast_read)")); break;
-    #endif
-    case FM_SLOW_READ: DEBUG_PRINT(F("(slow_read)")); break;
-    default: break;
-  }
-  #endif
-  DEBUG_PRINTF_P(PSTR(", speed %u MHz.\n"), ESP.getFlashChipSpeed()/1000000);
-
-#else
   DEBUG_PRINTF_P(PSTR("esp8266 @ %u MHz.\nCore: %s\n"), ESP.getCpuFreqMHz(), ESP.getCoreVersion());
   DEBUG_PRINTF_P(PSTR("FLASH: %u MB\n"), (ESP.getFlashChipSize()/1024)/1024);
-#endif
   DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
 
-#if defined(ARDUINO_ARCH_ESP32)
-  // BOARD_HAS_PSRAM also means that a compiler flag "-mfix-esp32-psram-cache-issue" was used and so PSRAM is safe to use on rev.1 ESP32
-  #if !defined(BOARD_HAS_PSRAM) && !(defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3))
-  if (psramFound() && ESP.getChipRevision() < 3) psramSafe = false;
-  if (!psramSafe) DEBUG_PRINTLN(F("Not using PSRAM."));
-  #endif
-  pDoc = new PSRAMDynamicJsonDocument((psramSafe && psramFound() ? 2 : 1)*JSON_BUFFER_SIZE);
-  DEBUG_PRINTF_P(PSTR("JSON buffer allocated: %u\n"), (psramSafe && psramFound() ? 2 : 1)*JSON_BUFFER_SIZE);
-  // if the above fails requestJsonBufferLock() will always return false preventing crashes
-  if (psramFound()) {
-    DEBUG_PRINTF_P(PSTR("PSRAM: %dkB/%dkB\n"), ESP.getFreePsram()/1024, ESP.getPsramSize()/1024);
-  }
-  DEBUG_PRINTF_P(PSTR("TX power: %d/%d\n"), WiFi.getTxPower(), txPower);
-#endif
-
-#ifdef ESP8266
   usePWMFixedNMI(); // link the NMI fix
-#endif
+
 
 #if defined(WLED_DEBUG) && !defined(WLED_DEBUG_HOST)
   PinManager::allocatePin(hardwareTX, true, PinOwner::DebugOut); // TX (GPIO1 on ESP32) reserved for debug output
 #endif
-
   DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
-
   bool fsinit = false;
   DEBUGFS_PRINTLN(F("Mount FS"));
-#ifdef ARDUINO_ARCH_ESP32
-  fsinit = WLED_FS.begin(true);
-#else
+
   fsinit = WLED_FS.begin();
-#endif
   if (!fsinit) {
     DEBUGFS_PRINTLN(F("FS failed!"));
     errorFlag = ERR_FS_BEGIN;
   }
 
   initPresetsFile();
-
   updateFSInfo();
 
   // generate module IDs must be done before AP setup
@@ -384,21 +301,15 @@ void WLED::setup()
 
 #if defined(STATUSLED) && STATUSLED>=0
   if (!PinManager::isPinAllocated(STATUSLED)) {
-    // NOTE: Special case: The status LED should *NOT* be allocated.
-    //       See comments in handleStatusLed().
     pinMode(STATUSLED, OUTPUT);
   }
 #endif
 
-  DEBUG_PRINTLN(F("Initializing strip"));
   beginStrip();
-  DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
 
-  DEBUG_PRINTLN(F("Usermods setup"));
-  userSetup();
-  UsermodManager::setup();
-  DEBUG_PRINTF_P(PSTR("heap %u\n"), ESP.getFreeHeap());
 
+  DEBUG_PRINTF_P(PSTR("multiWiFi[0].clientSSID %s\n"), multiWiFi[0].clientSSID);
+  DEBUG_PRINTF_P(PSTR("DEFAULT_CLIENT_SSID %s\n"), DEFAULT_CLIENT_SSID);
   if (strcmp(multiWiFi[0].clientSSID, DEFAULT_CLIENT_SSID) == 0)
     showWelcomePage = true;
   WiFi.persistent(false);
@@ -409,60 +320,17 @@ void WLED::setup()
   // all GPIOs are allocated at this point
   serialCanRX = !PinManager::isPinAllocated(hardwareRX); // Serial RX pin (GPIO 3 on ESP32 and ESP8266)
   serialCanTX = !PinManager::isPinAllocated(hardwareTX) || PinManager::getPinOwner(hardwareTX) == PinOwner::DebugOut; // Serial TX pin (GPIO 1 on ESP32 and ESP8266)
-
-  #ifdef WLED_ENABLE_ADALIGHT
-  //Serial RX (Adalight, Improv, Serial JSON) only possible if GPIO3 unused
-  //Serial TX (Debug, Improv, Serial JSON) only possible if GPIO1 unused
-  if (serialCanRX && serialCanTX) {
-    Serial.println(F("Ada"));
-  }
-  #endif
-
   // fill in unique mdns default
   if (strcmp(cmDNS, DEFAULT_MDNS_NAME) == 0) sprintf_P(cmDNS, PSTR("wled-%*s"), 6, escapedMac.c_str() + 6);
-#ifndef WLED_DISABLE_MQTT
   if (mqttDeviceTopic[0] == 0) sprintf_P(mqttDeviceTopic, PSTR("wled/%*s"), 6, escapedMac.c_str() + 6);
   if (mqttClientID[0] == 0)    sprintf_P(mqttClientID, PSTR("WLED-%*s"), 6, escapedMac.c_str() + 6);
-#endif
 
-#ifndef WLED_DISABLE_OTA
-  if (aOtaEnabled) {
-    ArduinoOTA.onStart([]() {
-      #ifdef ESP8266
-      wifi_set_sleep_type(NONE_SLEEP_T);
-      #endif
-      #if WLED_WATCHDOG_TIMEOUT > 0
-      WLED::instance().disableWatchdog();
-      #endif
-      DEBUG_PRINTLN(F("Start ArduinoOTA"));
-    });
-    ArduinoOTA.onError([](ota_error_t error) {
-      #if WLED_WATCHDOG_TIMEOUT > 0
-      // reenable watchdog on failed update
-      WLED::instance().enableWatchdog();
-      #endif
-    });
-    if (strlen(cmDNS) > 0)
-      ArduinoOTA.setHostname(cmDNS);
-  }
-#endif
-
-#ifdef WLED_ENABLE_ADALIGHT
-  if (serialCanRX && Serial.available() > 0 && Serial.peek() == 'I') handleImprovPacket();
-#endif
-
-
+  DEBUG_PRINTF_P(PSTR("mqttDeviceTopic %s\n"), mqttDeviceTopic);
+  DEBUG_PRINTF_P(PSTR("mqttClientID %s\n"), mqttClientID);
   // Seed FastLED random functions with an esp random value, which already works properly at this point.
   const uint32_t seed32 = hw_random();
   random16_set_seed((uint16_t)seed32);
 
-  #if WLED_WATCHDOG_TIMEOUT > 0
-  enableWatchdog();
-  #endif
-
-  #if defined(ARDUINO_ARCH_ESP32) && defined(WLED_DISABLE_BROWNOUT_DET)
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 1); //enable brownout detector
-  #endif
 }
 
 void WLED::beginStrip()
@@ -516,9 +384,6 @@ void WLED::initAP(bool resetAP)
   DEBUG_PRINTLN(apSSID);
   WiFi.softAPConfig(IPAddress(4, 3, 2, 1), IPAddress(4, 3, 2, 1), IPAddress(255, 255, 255, 0));
   WiFi.softAP(apSSID, apPass, apChannel, apHide);
-  #ifdef ARDUINO_ARCH_ESP32
-  WiFi.setTxPower(wifi_power_t(txPower));
-  #endif
 
   if (!apActive) // start captive portal if AP active
   {
@@ -585,14 +450,9 @@ void WLED::initConnection()
     prepareHostname(hostname);
     WiFi.begin(multiWiFi[selectedWiFi].clientSSID, multiWiFi[selectedWiFi].clientPass); // no harm if called multiple times
 
-#ifdef ARDUINO_ARCH_ESP32
-    WiFi.setTxPower(wifi_power_t(txPower));
-    WiFi.setSleep(!noWifiSleep);
-    WiFi.setHostname(hostname);
-#else
     wifi_set_sleep_type((noWifiSleep) ? NONE_SLEEP_T : MODEM_SLEEP_T);
     WiFi.hostname(hostname);
-#endif
+
   }
 }
 
@@ -600,10 +460,6 @@ void WLED::initInterfaces()
 {
   DEBUG_PRINTLN(F("Init STA interfaces"));
 
-#ifndef WLED_DISABLE_OTA
-  if (aOtaEnabled)
-    ArduinoOTA.begin();
-#endif
 
   // Set up mDNS responder:
   if (strlen(cmDNS) > 0) {

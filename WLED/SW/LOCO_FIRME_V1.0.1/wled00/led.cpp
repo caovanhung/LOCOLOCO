@@ -49,6 +49,9 @@ void applyValuesToSelectedSegs()
 
 void toggleOnOff()
 {
+  #ifdef WLED_DEBUG
+  DEBUG_PRINTF_P(PSTR("toggleOnOff: %d\n"), bri);
+  #endif
   if (bri == 0)
   {
     bri = briLast;

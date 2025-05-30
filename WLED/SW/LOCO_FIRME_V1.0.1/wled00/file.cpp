@@ -355,6 +355,12 @@ bool readObjectFromFile(const char* file, const char* key, JsonDocument* dest, c
   if (filter) deserializeJson(*dest, f, DeserializationOption::Filter(*filter));
   else        deserializeJson(*dest, f);
 
+  #ifdef WLED_DEBUG_FS
+    DEBUGFS_PRINTLN(F("File contents:"));
+    serializeJsonPretty(*dest, Serial);
+    DEBUGFS_PRINTLN();
+  #endif
+
   f.close();
   DEBUGFS_PRINTF("Read, took %d ms\n", millis() - s);
   return true;
