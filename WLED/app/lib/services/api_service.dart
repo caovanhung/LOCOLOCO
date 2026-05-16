@@ -18,6 +18,14 @@ class LoginResult {
   const LoginResult({required this.token, required this.mqtt});
 }
 
+class ApiException implements Exception {
+  final String message;
+  final int? statusCode;
+  const ApiException(this.message, {this.statusCode});
+  @override
+  String toString() => statusCode != null ? 'ApiException($statusCode): $message' : 'ApiException: $message';
+}
+
 class ApiService {
   final Dio _dio;
 
@@ -31,7 +39,17 @@ class ApiService {
     _dio.options.headers['Authorization'] = 'Bearer $token';
   }
 
-  Future<LoginResult> login(String username, String password) async {
+  Future<T> _call<T>(Future<T> Function() fn) async {
+    try {
+      return await fn();
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      final msg = e.response?.data?['error'] as String? ?? e.message ?? 'Network error';
+      throw ApiException(msg, statusCode: code);
+    }
+  }
+
+  Future<LoginResult> login(String username, String password) => _call(() async {
     final res = await _dio.post('/api/auth/login',
         data: {'username': username, 'password': password});
     final mqttMap = res.data['mqtt'] as Map<String, dynamic>;
@@ -39,60 +57,54 @@ class ApiService {
       token: res.data['token'] as String,
       mqtt: MqttCredentials(
         host: mqttMap['host'] as String,
-        port: mqttMap['port'] as int,
+        port: (mqttMap['port'] as num).toInt(),
         username: mqttMap['username'] as String,
         password: mqttMap['password'] as String,
       ),
     );
-  }
+  });
 
-  Future<List<Device>> getDevices() async {
+  Future<List<Device>> getDevices() => _call(() async {
     final res = await _dio.get('/api/devices');
     return (res.data as List).map((e) => Device.fromJson(e as Map<String, dynamic>)).toList();
-  }
+  });
 
-  Future<Device> addDevice(String id, String name, String? location) async {
+  Future<Device> addDevice(String id, String name, String? location) => _call(() async {
     final res = await _dio.post('/api/devices',
         data: {'id': id, 'name': name, 'location': location});
     return Device.fromJson(res.data as Map<String, dynamic>);
-  }
+  });
 
-  Future<void> deleteDevice(String id) async {
-    await _dio.delete('/api/devices/$id');
-  }
+  Future<void> deleteDevice(String id) => _call(() => _dio.delete('/api/devices/$id'));
 
-  Future<List<Schedule>> getSchedules(String deviceId) async {
+  Future<List<Schedule>> getSchedules(String deviceId) => _call(() async {
     final res = await _dio.get('/api/schedules', queryParameters: {'device_id': deviceId});
     return (res.data as List).map((e) => Schedule.fromJson(e as Map<String, dynamic>)).toList();
-  }
+  });
 
   Future<Schedule> createSchedule(String deviceId, String cronExpr,
-                                   Map<String, dynamic> command) async {
+                                   Map<String, dynamic> command) => _call(() async {
     final res = await _dio.post('/api/schedules',
         data: {'device_id': deviceId, 'cron_expr': cronExpr, 'command': command});
     return Schedule.fromJson(res.data as Map<String, dynamic>);
-  }
+  });
 
-  Future<void> deleteSchedule(int id) async {
-    await _dio.delete('/api/schedules/$id');
-  }
+  Future<void> deleteSchedule(int id) => _call(() => _dio.delete('/api/schedules/$id'));
 
-  Future<List<SensorRule>> getRules(String deviceId) async {
+  Future<List<SensorRule>> getRules(String deviceId) => _call(() async {
     final res = await _dio.get('/api/rules', queryParameters: {'device_id': deviceId});
     return (res.data as List).map((e) => SensorRule.fromJson(e as Map<String, dynamic>)).toList();
-  }
+  });
 
   Future<SensorRule> createRule(String deviceId, String sensorType,
-      String conditionOp, double conditionVal, Map<String, dynamic> command) async {
+      String conditionOp, double conditionVal, Map<String, dynamic> command) => _call(() async {
     final res = await _dio.post('/api/rules', data: {
       'device_id': deviceId, 'sensor_type': sensorType,
       'condition_op': conditionOp, 'condition_val': conditionVal,
       'command': command,
     });
     return SensorRule.fromJson(res.data as Map<String, dynamic>);
-  }
+  });
 
-  Future<void> deleteRule(int id) async {
-    await _dio.delete('/api/rules/$id');
-  }
+  Future<void> deleteRule(int id) => _call(() => _dio.delete('/api/rules/$id'));
 }

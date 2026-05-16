@@ -7,6 +7,7 @@ import '../models/mqtt_message.dart';
 class MqttService {
   MqttServerClient? _client;
   final _messageController = StreamController<MqttEnvelope>.broadcast();
+  StreamSubscription? _updatesSub;
 
   Stream<MqttEnvelope> get messages => _messageController.stream;
 
@@ -14,6 +15,10 @@ class MqttService {
     required String host, required int port,
     required String username, required String password,
   }) async {
+    await _updatesSub?.cancel();
+    _updatesSub = null;
+    _client?.disconnect();
+
     _client = MqttServerClient.withPort(host, 'loco-app-${DateTime.now().millisecondsSinceEpoch}', port);
     _client!.secure = true;
     _client!.onBadCertificate = (_) => true;
@@ -26,9 +31,15 @@ class MqttService {
         .startClean();
     _client!.connectionMessage = connMsg;
 
-    await _client!.connect();
+    try {
+      await _client!.connect();
+    } catch (e) {
+      _client?.disconnect();
+      _client = null;
+      rethrow;
+    }
 
-    _client!.updates?.listen((List<MqttReceivedMessage<MqttMessage>> events) {
+    _updatesSub = _client!.updates?.listen((List<MqttReceivedMessage<MqttMessage>> events) {
       for (final event in events) {
         final pubMsg = event.payload as MqttPublishMessage;
         final raw = MqttPublishPayload.bytesToStringAsString(pubMsg.payload.message);
@@ -70,4 +81,10 @@ class MqttService {
 
   bool get isConnected =>
       _client?.connectionStatus?.state == MqttConnectionState.connected;
+
+  Future<void> dispose() async {
+    await _updatesSub?.cancel();
+    _client?.disconnect();
+    await _messageController.close();
+  }
 }
