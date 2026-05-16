@@ -7,7 +7,7 @@ module.exports = {
       .then(r => r.rows[0]),
 
   getAllDevices: () =>
-    pool.query('SELECT * FROM devices ORDER BY created_at DESC')
+    pool.query('SELECT id, name, location, online, created_at FROM devices ORDER BY created_at DESC')
       .then(r => r.rows),
 
   upsertDevice: (id, name, location) =>
@@ -75,4 +75,6 @@ module.exports = {
 
   deleteRule: (id) =>
     pool.query('DELETE FROM sensor_rules WHERE id=$1', [id]),
+
+  end: () => pool.end(),
 };
