@@ -1,0 +1,32 @@
+const router = require('express').Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const db = require('../db/queries');
+
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password)
+    return res.status(400).json({ error: 'username and password required' });
+
+  const user = await db.findUserByUsername(username);
+  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+  const ok = await bcrypt.compare(password, user.password_hash);
+  if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
+
+  const token = jwt.sign({ id: user.id, username: user.username },
+                          process.env.JWT_SECRET,
+                          { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+
+  res.json({
+    token,
+    mqtt: {
+      host: process.env.MQTT_HOST,
+      port: 8883,
+      username: process.env.APP_MQTT_USER,
+      password: process.env.APP_MQTT_PASS,
+    }
+  });
+});
+
+module.exports = router;
