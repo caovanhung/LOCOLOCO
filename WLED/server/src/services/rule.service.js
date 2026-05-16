@@ -32,15 +32,15 @@ async function processSensorMessage(deviceId, sensorData, mqttPublishFn) {
 
     let sensorVal;
     switch (sensor_type) {
-      case 'PIR':      sensorVal = sensorData.pir;  break;
-      case 'LDR':      sensorVal = sensorData.ldr;  break;
-      case 'DHT_TEMP': sensorVal = sensorData.temp; break;
-      case 'DHT_HUM':  sensorVal = sensorData.hum;  break;
+      case 'PIR':      sensorVal = sensorData.pir ? 1 : 0;  break;
+      case 'LDR':      sensorVal = sensorData.ldr;           break;
+      case 'DHT_TEMP': sensorVal = sensorData.temp;          break;
+      case 'DHT_HUM':  sensorVal = sensorData.hum;           break;
       default: continue;
     }
 
-    if (sensorVal === undefined) continue;
-    if (!evaluateCondition(sensorVal, condition_op, condition_val)) continue;
+    if (sensorVal === undefined || sensorVal === null) continue;
+    if (!evaluateCondition(sensorVal, condition_op, Number(condition_val))) continue;
 
     const envelope = buildCommandEnvelope(deviceId, command);
     const topic = `loco/v1/${deviceId}/cmd/led`;

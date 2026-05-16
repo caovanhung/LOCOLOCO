@@ -38,6 +38,12 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { sensor_type, condition_op, condition_val, command, enabled } = req.body;
+  if (!sensor_type || !condition_op || condition_val === undefined || !command || enabled === undefined)
+    return res.status(400).json({ error: 'sensor_type, condition_op, condition_val, command, enabled required' });
+  if (!VALID_SENSORS.includes(sensor_type))
+    return res.status(400).json({ error: 'invalid sensor_type' });
+  if (!VALID_OPS.includes(condition_op))
+    return res.status(400).json({ error: 'invalid condition_op' });
   try {
     const row = await db.updateRule(req.params.id, sensor_type, condition_op,
                                     condition_val, command, enabled);

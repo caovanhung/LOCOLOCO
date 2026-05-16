@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS schedules (
 CREATE TABLE IF NOT EXISTS sensor_rules (
   id             SERIAL PRIMARY KEY,
   device_id      VARCHAR(32) REFERENCES devices(id) ON DELETE CASCADE,
-  sensor_type    VARCHAR(20) NOT NULL CHECK (sensor_type IN ('temperature', 'humidity', 'motion', 'light')),
-  condition_op   VARCHAR(5) NOT NULL CHECK (condition_op IN ('>', '<', '>=', '<=', '=')),
+  sensor_type    VARCHAR(20) NOT NULL CHECK (sensor_type IN ('PIR', 'LDR', 'DHT_TEMP', 'DHT_HUM')),
+  condition_op   VARCHAR(5)  NOT NULL CHECK (condition_op IN ('==', '!=', '>', '<', '>=', '<=')),
   condition_val  FLOAT NOT NULL,
   command        JSONB NOT NULL,
   enabled        BOOLEAN DEFAULT true,

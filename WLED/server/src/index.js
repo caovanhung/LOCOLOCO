@@ -23,7 +23,7 @@ if (require.main === module) {
   const db = require('./db/queries');
   mqttService.connect();
   const scheduler = createSchedulerService(db, mqttService.publish);
-  scheduler.loadAll();
   scheduleRoutes.setScheduler(scheduler);
+  scheduler.loadAll();
 }
 module.exports = app;
