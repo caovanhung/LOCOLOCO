@@ -19,6 +19,7 @@
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "jsonwebtoken": "^9.0.3",
     "mqtt": "^5.15.1",
     "node-cron": "^4.2.1",

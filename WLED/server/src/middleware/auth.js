@@ -7,7 +7,8 @@ module.exports = (req, res, next) => {
   try {
     req.user = jwt.verify(header.slice(7), process.env.JWT_SECRET);
     next();
-  } catch {
+  } catch (err) {
+    console.warn('auth middleware:', err.name);
     res.status(401).json({ error: 'Invalid token' });
   }
 };
