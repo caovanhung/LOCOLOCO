@@ -4,8 +4,12 @@ const app = express();
 app.use(express.json());
 const authRoutes = require('./routes/auth');
 const deviceRoutes = require('./routes/devices');
+const scheduleRoutes = require('./routes/schedules');
+const ruleRoutes = require('./routes/rules');
 app.use('/api/auth', authRoutes);
 app.use('/api/devices', deviceRoutes);
+app.use('/api/schedules', scheduleRoutes);
+app.use('/api/rules', ruleRoutes);
 app.get('/health', (_, res) => res.json({ ok: true }));
 if (require.main === module) {
   if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET env var is required');
@@ -20,5 +24,6 @@ if (require.main === module) {
   mqttService.connect();
   const scheduler = createSchedulerService(db, mqttService.publish);
   scheduler.loadAll();
+  scheduleRoutes.setScheduler(scheduler);
 }
 module.exports = app;
