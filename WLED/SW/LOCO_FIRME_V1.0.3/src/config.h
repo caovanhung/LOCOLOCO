@@ -27,9 +27,9 @@
 #define LED_BRIGHTNESS   200
 
 // === Sensor enable flags ===
-#define ENABLE_PIR       true
-#define ENABLE_LDR       false
-#define ENABLE_DHT       false
+#define ENABLE_PIR       1
+#define ENABLE_LDR       0
+#define ENABLE_DHT       0
 
 // === Sensor pins ===
 #define PIR_PIN          5       // GPIO5 / D1

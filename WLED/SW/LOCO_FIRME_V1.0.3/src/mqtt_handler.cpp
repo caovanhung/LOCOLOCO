@@ -57,8 +57,8 @@ static void onMqttMessage(char* topic, byte* payload, unsigned int len) {
 }
 
 static void mqttConnect() {
-  char lwtPayload[128];
-  StaticJsonDocument<128> lwtDoc;
+  char lwtPayload[192];
+  StaticJsonDocument<192> lwtDoc;
   buildEnvelope(lwtDoc, "evt");
   lwtDoc["data"]["online"] = false;
   serializeJson(lwtDoc, lwtPayload, sizeof(lwtPayload));
@@ -70,10 +70,10 @@ static void mqttConnect() {
   if (mqttClient.connect(DEVICE_ID, MQTT_USER, MQTT_PASS,
                          TOPIC_EVT_STATUS, 0, true, lwtPayload)) {
     mqttClient.subscribe(TOPIC_CMD_LED, 1);
-    StaticJsonDocument<128> onlineDoc;
+    StaticJsonDocument<192> onlineDoc;
     buildEnvelope(onlineDoc, "evt");
     onlineDoc["data"]["online"] = true;
-    char onlineBuf[128];
+    char onlineBuf[192];
     serializeJson(onlineDoc, onlineBuf, sizeof(onlineBuf));
     mqttClient.publish(TOPIC_EVT_STATUS, onlineBuf, true);
     Serial.println("MQTT connected");
@@ -87,7 +87,11 @@ void mqttInit(CommandCallback onCmd) {
 }
 
 void mqttLoop() {
-  if (!mqttClient.connected()) mqttConnect();
+  static unsigned long lastReconnect = 0;
+  if (!mqttClient.connected() && millis() - lastReconnect >= 5000) {
+    lastReconnect = millis();
+    mqttConnect();
+  }
   mqttClient.loop();
 }
 
@@ -95,7 +99,7 @@ bool mqttConnected() { return mqttClient.connected(); }
 
 void mqttPublishState(bool on, uint8_t bri, uint8_t effect,
                       uint8_t r, uint8_t g, uint8_t b) {
-  StaticJsonDocument<256> doc;
+  StaticJsonDocument<384> doc;
   buildEnvelope(doc, "rpt");
   JsonObject dps = doc["data"].createNestedObject("dps");
   dps["1"] = on;
@@ -105,21 +109,21 @@ void mqttPublishState(bool on, uint8_t bri, uint8_t effect,
   snprintf(colorBuf, sizeof(colorBuf), "%d,%d,%d", r, g, b);
   dps["4"] = colorBuf;
 
-  char buf[256];
+  char buf[384];
   serializeJson(doc, buf, sizeof(buf));
   mqttClient.publish(TOPIC_RPT_STATE, buf, true);
 }
 
 void mqttPublishSensor(int pirVal, int ldrVal, float temp, float hum,
                        bool hasPir, bool hasLdr, bool hasDht) {
-  StaticJsonDocument<256> doc;
+  StaticJsonDocument<384> doc;
   buildEnvelope(doc, "rpt");
   JsonObject sensors = doc["data"].createNestedObject("sensors");
   if (hasPir) sensors["pir"]  = pirVal;
   if (hasLdr) sensors["ldr"]  = ldrVal;
   if (hasDht) { sensors["temp"] = temp; sensors["hum"] = hum; }
 
-  char buf[256];
+  char buf[384];
   serializeJson(doc, buf, sizeof(buf));
   mqttClient.publish(TOPIC_RPT_SENSOR, buf, false);
 }

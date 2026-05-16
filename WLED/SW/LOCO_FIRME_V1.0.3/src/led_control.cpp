@@ -40,8 +40,13 @@ static void effectBlink() {
 static void effectFade() {
   if (millis() - lastFade < 10) return;
   lastFade = millis();
-  fadeVal = fadeDir ? fadeVal + 1 : fadeVal - 1;
-  if (fadeVal == 255 || fadeVal == 0) fadeDir = !fadeDir;
+  if (fadeDir) {
+    if (fadeVal < 255) fadeVal++;
+    else fadeDir = false;
+  } else {
+    if (fadeVal > 0) fadeVal--;
+    else fadeDir = true;
+  }
   for (int i = 0; i < LED_COUNT; i++)
     leds[i] = CRGB(state.r, state.g, state.b);
   FastLED.setBrightness(fadeVal);

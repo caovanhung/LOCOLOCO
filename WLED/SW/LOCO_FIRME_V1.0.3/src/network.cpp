@@ -20,8 +20,9 @@ bool networkConnected() {
 }
 
 void networkLoop() {
-  if (WiFi.status() != WL_CONNECTED) {
+  static unsigned long lastRetry = 0;
+  if (WiFi.status() != WL_CONNECTED && millis() - lastRetry >= 5000) {
+    lastRetry = millis();
     WiFi.reconnect();
-    delay(500);
   }
 }
