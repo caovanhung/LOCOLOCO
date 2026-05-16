@@ -13,5 +13,12 @@ if (require.main === module) {
   const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   process.on('SIGTERM', () => server.close(() => process.exit(0)));
   process.on('SIGINT',  () => server.close(() => process.exit(0)));
+
+  const mqttService = require('./services/mqtt.service');
+  const { createSchedulerService } = require('./services/scheduler.service');
+  const db = require('./db/queries');
+  mqttService.connect();
+  const scheduler = createSchedulerService(db, mqttService.publish);
+  scheduler.loadAll();
 }
 module.exports = app;
