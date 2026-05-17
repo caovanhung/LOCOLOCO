@@ -1,6 +1,0 @@
-{
-  "name:": "BME68X",
-  "dependencies": {
-    "boschsensortec/BSEC Software Library":"^1.8.1492"
-  }
-}

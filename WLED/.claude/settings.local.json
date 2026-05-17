@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m platformio project init -d \"/c/Users/Admin/Desktop/Hung/LOCOLOCO/WLED/SW/LOCO_FIRME_V1.0.3\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git -C \"C:\\\\Users\\\\Admin\\\\Desktop\\\\Hung\\\\LOCOLOCO\\\\WLED\" log --oneline)",
+      "Bash(npm install *)"
+    ]
+  }
+}

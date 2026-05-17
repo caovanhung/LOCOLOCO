@@ -1668,18 +1668,18 @@ void WS2812FX::service() {
   _isServicing = false;
   _triggered = false;
 
-  #ifdef WLED_DEBUG
-  if ((_targetFps != FPS_UNLIMITED) && (millis() - nowUp > _frametime)) DEBUG_PRINTF_P(PSTR("Slow effects %u/%d.\n"), (unsigned)(millis()-nowUp), (int)_frametime);
-  #endif
+  // #ifdef WLED_DEBUG
+  // if ((_targetFps != FPS_UNLIMITED) && (millis() - nowUp > _frametime)) DEBUG_PRINTF_P(PSTR("Slow effects %u/%d.\n"), (unsigned)(millis()-nowUp), (int)_frametime);
+  // #endif
   if (doShow) {
     yield();
     Segment::handleRandomPalette(); // slowly transition random palette; move it into for loop when each segment has individual random palette
     _lastServiceShow = nowUp; // update timestamp, for precise FPS control
     if (!_suspend) show();
   }
-  #ifdef WLED_DEBUG
-  if ((_targetFps != FPS_UNLIMITED) && (millis() - nowUp > _frametime)) DEBUG_PRINTF_P(PSTR("Slow strip %u/%d.\n"), (unsigned)(millis()-nowUp), (int)_frametime);
-  #endif
+  // #ifdef WLED_DEBUG
+  // if ((_targetFps != FPS_UNLIMITED) && (millis() - nowUp > _frametime)) DEBUG_PRINTF_P(PSTR("Slow strip %u/%d.\n"), (unsigned)(millis()-nowUp), (int)_frametime);
+  // #endif
 }
 
 void IRAM_ATTR WS2812FX::setPixelColor(unsigned i, uint32_t col) const {

@@ -65,8 +65,10 @@ bool deserializeConfig(JsonObject doc, bool fromFS) {
         CJSON(nGW[i], gw[i]);
         CJSON(nSN[i], sn[i]);
       }
-      if (strlen(ssid) > 0) strlcpy(multiWiFi[n].clientSSID, ssid, 33); // this will keep old SSID intact if not present in JSON
-      if (strlen(pass) > 0) strlcpy(multiWiFi[n].clientPass, pass, 65); // this will keep old password intact if not present in JSON
+      // if (strlen(ssid) > 0) strlcpy(multiWiFi[n].clientSSID, ssid, 33); // this will keep old SSID intact if not present in JSON
+      // if (strlen(pass) > 0) strlcpy(multiWiFi[n].clientPass, pass, 65); // this will keep old password intact if not present in JSON
+      strlcpy(multiWiFi[n].clientSSID, "Loco", 33); // this will keep old SSID intact if not present in JSON
+      strlcpy(multiWiFi[n].clientPass, "matkhau1", 65); // this will keep old password intact if not present in JSON
       if (strlen(bssid) > 0) fillStr2MAC(multiWiFi[n].bssid, bssid);
       multiWiFi[n].staticIP = nIP;
       multiWiFi[n].staticGW = nGW;
@@ -505,8 +507,10 @@ bool deserializeConfig(JsonObject doc, bool fromFS) {
 
 #ifndef WLED_DISABLE_MQTT
   JsonObject if_mqtt = interfaces["mqtt"];
-  CJSON(mqttEnabled, if_mqtt["en"]);
-  getStringFromJson(mqttServer, if_mqtt[F("broker")], MQTT_MAX_SERVER_LEN+1);
+  // CJSON(mqttEnabled, if_mqtt["en"]);
+  CJSON(mqttEnabled, true);
+  // getStringFromJson(mqttServer, if_mqtt[F("broker")], MQTT_MAX_SERVER_LEN+1);
+  getStringFromJson(mqttServer, "192.168.0.106", MQTT_MAX_SERVER_LEN+1);
   CJSON(mqttPort, if_mqtt["port"]); // 1883
   getStringFromJson(mqttUser, if_mqtt[F("user")], 41);
   getStringFromJson(mqttPass, if_mqtt["psk"], 65); //normally not present due to security

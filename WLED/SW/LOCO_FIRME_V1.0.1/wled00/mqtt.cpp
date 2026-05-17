@@ -11,6 +11,8 @@
 #warning "MQTT topics length > 32 is not recommended for compatibility with usermods!"
 #endif
 
+#define CALL_MODE_MQTT 4  // Call mode for MQTT updates
+
 static void parseMQTTBriPayload(char* payload)
 {
   if      (strstr(payload, "ON") || strstr(payload, "on") || strstr(payload, "true")) {bri = briLast; stateUpdated(CALL_MODE_DIRECT_CHANGE);}
@@ -64,33 +66,124 @@ static void onMqttConnect(bool sessionPresent)
 
 
 static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-  static char *payloadStr;
+  DEBUG_PRINTF_P(PSTR("MQTT message received: %s\n"), topic);
+  static char *payloadStr = nullptr;
+  static size_t payloadTotal = 0;
+  
+  if (index == 0) {
+    // First chunk of message
+    if (payloadStr != nullptr) {
+      delete[] payloadStr;
+      payloadStr = nullptr;
+    }
+    payloadTotal = total;
+    if (total > 0) {
+      payloadStr = new char[total + 1];
+      if (payloadStr == nullptr) {
+        DEBUG_PRINTLN(F("MQTT: Out of memory!"));
+        return;
+      }
+    }
+  }
 
+  if (payloadStr != nullptr && len > 0) {
+    memcpy(payloadStr + index, payload, len);
+    if (index + len == total) {
+      payloadStr[total] = '\0';
+      
+      // Check if this is a JSON message
+      if (payloadStr[0] == '{') {
+        DEBUG_PRINTLN(F("MQTT: Processing JSON payload"));
+        StaticJsonDocument<1024> doc;  // Use StaticJsonDocument instead
+        DeserializationError error = deserializeJson(doc, payloadStr);
+        if (!error) {
+          if (doc.containsKey("on")) {
+            bool newState = doc["on"] | false;
+            DEBUG_PRINTF_P(PSTR("MQTT: Setting power state to %d\n"), newState);
+            if (newState != bri) {
+              bri = newState ? briLast : 0;
+              stateUpdated(CALL_MODE_DIRECT_CHANGE);
+              DEBUG_PRINTF_P(PSTR("MQTT: Updated brightness to %d\n"), bri);
+            }
+          }
+          // ... rest of JSON processing ...
+        } else {
+          DEBUG_PRINTF_P(PSTR("MQTT: JSON parsing failed: %s\n"), error.c_str());
+        }
+      }
+      delete[] payloadStr;
+      payloadStr = nullptr;
+    }
+  }
+
+  // Debug log
   DEBUG_PRINTF_P(PSTR("MQTT msg: %s\n"), topic);
-  DEBUG_PRINTF_P(PSTR("payload: %s\n"), payload);
-  // paranoia check to avoid npe if no payload
-  if (payload==nullptr) {
+  DEBUG_PRINTF_P(PSTR("payload length: %d\n"), len);
+  DEBUG_PRINTF_P(PSTR("payload index: %d\n"), index);
+  DEBUG_PRINTF_P(PSTR("payload total: %d\n"), total);
+  DEBUG_PRINTF_P(PSTR("Free heap: %d\n"), ESP.getFreeHeap());
+
+  // Kiểm tra payload
+  if (payload == nullptr) {
     DEBUG_PRINTLN(F("no payload -> leave"));
     return;
   }
 
-  if (index == 0) {                       // start (1st partial packet or the only packet)
-    if (payloadStr) free(payloadStr);     // fail-safe: release buffer
-    payloadStr = static_cast<char*>(malloc(total+1)); // allocate new buffer
+  // Kiểm tra kích thước payload
+  if (total > MQTT_MAX_PACKET_SIZE) {
+    DEBUG_PRINTLN(F("Payload too large"));
+    return;
   }
-  if (payloadStr == nullptr) return;      // buffer not allocated
 
-  // copy (partial) packet to buffer and 0-terminate it if it is last packet
-  char* buff = payloadStr + index;
-  memcpy(buff, payload, len);
-  if (index + len >= total) { // at end
-    payloadStr[total] = '\0'; // terminate c style string
+  // Xử lý payload từng phần
+  if (index == 0) {
+    // Reset buffer cho packet mới
+    if (payloadStr) {
+      free(payloadStr);
+      payloadStr = nullptr;
+    }
+    payloadTotal = total;
+    payloadStr = static_cast<char*>(malloc(total + 1));
+    if (!payloadStr) {
+      DEBUG_PRINTLN(F("Failed to allocate memory for payload"));
+      return;
+    }
+    payloadStr[0] = '\0'; // Initialize as empty string
+  }
+
+  if (!payloadStr) {
+    DEBUG_PRINTLN(F("No payload buffer"));
+    return;
+  }
+
+  // Copy payload vào buffer
+  if (index + len <= total) {
+    memcpy(payloadStr + index, payload, len);
+    payloadStr[index + len] = '\0';
   } else {
-    DEBUG_PRINTLN(F("MQTT partial packet received."));
-    return; // process next packet
+    DEBUG_PRINTLN(F("Invalid payload length"));
+    free(payloadStr);
+    payloadStr = nullptr;
+    return;
   }
-  DEBUG_PRINTLN(payloadStr);
 
+  // Chỉ xử lý khi nhận đủ packet
+  if (index + len < total) {
+    DEBUG_PRINTLN(F("MQTT partial packet received."));
+    return;
+  }
+
+  // Validate JSON trước khi parse
+  if (payloadStr[0] != '{' && payloadStr[0] != '[') {
+    DEBUG_PRINTLN(F("Invalid JSON format"));
+    free(payloadStr);
+    payloadStr = nullptr;
+    return;
+  }
+
+  DEBUG_PRINTF_P(PSTR("Complete payload: %s\n"), payloadStr);
+
+  // Xử lý topic
   size_t topicPrefixLen = strlen(mqttDeviceTopic);
   if (strncmp(topic, mqttDeviceTopic, topicPrefixLen) == 0) {
     topic += topicPrefixLen;
@@ -99,7 +192,7 @@ static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProp
     if (strncmp(topic, mqttGroupTopic, topicPrefixLen) == 0) {
       topic += topicPrefixLen;
     } else {
-      // Non-Wled Topic used here. Probably a usermod subscribed to this topic.
+      // Non-Wled Topic
       UsermodManager::onMqttMessage(topic, payloadStr);
       free(payloadStr);
       payloadStr = nullptr;
@@ -107,34 +200,93 @@ static void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProp
     }
   }
 
-  //Prefix is stripped from the topic at this point
-
+  // Xử lý message theo topic
   if (strcmp_P(topic, PSTR("/col")) == 0) {
+    DEBUG_PRINTF_P(PSTR("[MQTT] Set color: %s\n"), payloadStr);
     colorFromDecOrHexString(colPri, payloadStr);
     colorUpdated(CALL_MODE_DIRECT_CHANGE);
   } else if (strcmp_P(topic, PSTR("/api")) == 0) {
+    DEBUG_PRINTF_P(PSTR("[MQTT] Set API: %s\n"), payloadStr);
     if (requestJSONBufferLock(15)) {
       if (payloadStr[0] == '{') { //JSON API
-        DEBUG_PRINTF_P(PSTR("payloadStr: %s\n"), payloadStr);
-        DEBUG_PRINTF_P(PSTR("topic: %s\n"), topic);
-        deserializeJson(*pDoc, payloadStr);
-        deserializeState(pDoc->as<JsonObject>());
+        DEBUG_PRINTF_P(PSTR("Processing JSON API: %s\n"), payloadStr);
+        
+        // Clear previous document
+        pDoc->clear();
+        
+        // Parse JSON with error checking
+        DeserializationError error = deserializeJson(*pDoc, payloadStr);
+        if (error) {
+          DEBUG_PRINTF_P(PSTR("JSON parse failed: %s\n"), error.c_str());
+          releaseJSONBufferLock();
+          return;
+        }
+
+        // Validate JSON structure
+        JsonObject root = pDoc->as<JsonObject>();
+        if (!root.isNull()) {
+          DEBUG_PRINTLN(F("Valid JSON object received"));
+          
+          // Handle power state first
+          if (root.containsKey("on")) {
+            bool newState = root["on"] | false;
+            DEBUG_PRINTF_P(PSTR("Setting power state to: %d\n"), newState);
+            if (newState != bri) {
+              bri = newState ? briLast : 0;
+              stateUpdated(CALL_MODE_DIRECT_CHANGE);
+            }
+          }
+
+          // Handle brightness
+          if (root.containsKey("bri")) {
+            uint8_t newBri = root["bri"] | bri;
+            DEBUG_PRINTF_P(PSTR("Setting brightness to: %d\n"), newBri);
+            if (newBri != bri) {
+              bri = newBri;
+              stateUpdated(CALL_MODE_DIRECT_CHANGE);
+            }
+          }
+
+          // Handle color
+          if (root.containsKey("col")) {
+            JsonArray col = root["col"];
+            if (col.size() >= 3) {
+              uint8_t r = col[0][0] | 0;
+              uint8_t g = col[0][1] | 0;
+              uint8_t b = col[0][2] | 0;
+              DEBUG_PRINTF_P(PSTR("Setting color to: [%d,%d,%d]\n"), r, g, b);
+              col[0] = r;
+              col[1] = g;
+              col[2] = b;
+              stateUpdated(CALL_MODE_DIRECT_CHANGE);
+            }
+          }
+
+          // Apply all other state changes
+          deserializeState(root);
+          stateUpdated(CALL_MODE_DIRECT_CHANGE);
+        } else {
+          DEBUG_PRINTLN(F("Invalid JSON object"));
+        }
       } else { //HTTP API
-        String apireq = "win"; apireq += '&'; // reduce flash string usage
+        String apireq = "win&";
         apireq += payloadStr;
         handleSet(nullptr, apireq);
       }
       releaseJSONBufferLock();
     }
   } else if (strlen(topic) != 0) {
-    // non standard topic, check with usermods
+    // non standard topic
     UsermodManager::onMqttMessage(topic, payloadStr);
   } else {
-    // topmost topic (just wled/MAC)
+    // topmost topic
     parseMQTTBriPayload(payloadStr);
   }
+
+  // Cleanup
   free(payloadStr);
   payloadStr = nullptr;
+  payloadTotal = 0;
 }
 
 // Print adapter for flat buffers

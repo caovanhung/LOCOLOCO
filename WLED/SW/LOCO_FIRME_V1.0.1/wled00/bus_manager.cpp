@@ -24,6 +24,7 @@
 #include "bus_manager.h"
 #include "bus_wrapper.h"
 #include <bits/unique_ptr.h>
+#include "wled.h"
 
 extern bool cctICused;
 extern bool useParallelI2S;
@@ -139,7 +140,6 @@ BusDigital::BusDigital(const BusConfig &bc, uint8_t nr)
     _valid?"S":"Uns",
     (int)nr,
     (int)bc.count,
-    (int)bc.type,
     (int)_hasRgb, (int)_hasWhite, (int)_hasCCT,
     (unsigned)_pins[0], is2Pin(bc.type)?(unsigned)_pins[1]:255U,
     (unsigned)_iType,
@@ -934,10 +934,15 @@ void BusManager::esp32RMTInvertIdle() {
 }
 #endif
 
+#ifdef ESP8266
+#define GPIO2 2  // Define GPIO2 for ESP8266 at the top level
+#endif
+
 void BusManager::on() {
   #ifdef ESP8266
-  //Fix for turning off onboard LED breaking bus
+  DEBUGBUS_PRINTLN(F("BusManager::on() - Checking LED_BUILTIN and GPIO2 status"));
   if (PinManager::getPinOwner(LED_BUILTIN) == PinOwner::BusDigital) {
+    DEBUGBUS_PRINTF_P(PSTR("LED_BUILTIN (GPIO%d) is configured as BusDigital\n"), LED_BUILTIN);
     for (auto &bus : busses) {
       uint8_t pins[2] = {255,255};
       if (bus->isDigital() && bus->getPins(pins)) {
@@ -948,25 +953,31 @@ void BusManager::on() {
         }
       }
     }
+  } else {
+    DEBUGBUS_PRINTF_P(PSTR("LED_BUILTIN (GPIO%d) is NOT configured as BusDigital\n"), LED_BUILTIN);
   }
-  #endif
-  #ifdef ESP32_DATA_IDLE_HIGH
-  esp32RMTInvertIdle();
+  
+  if (PinManager::getPinOwner(GPIO2) == PinOwner::BusDigital) {
+    DEBUGBUS_PRINTF_P(PSTR("GPIO2 is configured as BusDigital\n"));
+  }
   #endif
 }
 
 void BusManager::off() {
   #ifdef ESP8266
-  // turn off built-in LED if strip is turned off
-  // this will break digital bus so will need to be re-initialised on On
+  DEBUGBUS_PRINTLN(F("BusManager::off() - Checking LED_BUILTIN and GPIO2 status"));
   if (PinManager::getPinOwner(LED_BUILTIN) == PinOwner::BusDigital) {
+    DEBUGBUS_PRINTF_P(PSTR("LED_BUILTIN (GPIO%d) is configured as BusDigital\n"), LED_BUILTIN);
     for (const auto &bus : busses) if (bus->isOffRefreshRequired()) return;
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH); // Active LOW
+  } else {
+    DEBUGBUS_PRINTF_P(PSTR("LED_BUILTIN (GPIO%d) is NOT configured as BusDigital\n"), LED_BUILTIN);
   }
-  #endif
-  #ifdef ESP32_DATA_IDLE_HIGH
-  esp32RMTInvertIdle();
+  
+  if (PinManager::getPinOwner(GPIO2) == PinOwner::BusDigital) {
+    DEBUGBUS_PRINTF_P(PSTR("GPIO2 is configured as BusDigital\n"));
+  }
   #endif
 }
 

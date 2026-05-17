@@ -295,29 +295,63 @@ bool deserializeSegment(JsonObject elem, byte it, byte presetId)
 // presetId is non-0 if called from handlePreset()
 bool deserializeState(JsonObject root, byte callMode, byte presetId)
 {
+  if (root.isNull()) {
+    DEBUG_PRINTLN(F("Invalid JSON object"));
+    return false;
+  }
+
   bool stateResponse = root[F("v")] | false;
   bool onBefore = bri;
 
-  getVal(root["bri"], &bri);
+  // Get brightness safely
+  if (root.containsKey("bri")) {
+    if (root["bri"].is<int>()) {
+      bri = root["bri"].as<int>();
+    }
+  }
 
   #if defined(WLED_DEBUG) 
-  DEBUG_PRINTF_P(PSTR("on: %s \n"), root["on"]);
   DEBUG_PRINTF_P(PSTR("onBefore: %d\n"), onBefore);
   DEBUG_PRINTF_P(PSTR("bri: %d\n"), bri);
   #endif
-  bool on = root["on"] | (bri > 0);
-  if (!on != !bri) toggleOnOff();
 
-  if (root["on"].is<const char*>() && root["on"].as<const char*>()[0] == 't') {
-    if (onBefore || !bri) toggleOnOff(); // do not toggle off again if just turned on by bri (makes e.g. "{"on":"t","bri":32}" work)
+  // Handle power state safely
+  if (root.containsKey("on")) {
+    bool newState = false;
+    
+    if (root["on"].is<bool>()) {
+      newState = root["on"].as<bool>();
+    } else if (root["on"].is<const char*>()) {
+      const char* onStr = root["on"].as<const char*>();
+      if (onStr && onStr[0] == 't') {
+        // Toggle state
+        newState = !(bri > 0);
+      }
+    }
+
+    DEBUG_PRINTF_P(PSTR("Setting power state to: %d\n"), newState);
+    
+    if (newState != (bri > 0)) {
+      if (newState) {
+        bri = briLast;
+      } else {
+        briLast = bri;
+        bri = 0;
+      }
+      stateUpdated(callMode);
+    }
   }
 
-  if (bri && !onBefore) { // unfreeze all segments when turning on
-    for (size_t s=0; s < strip.getSegmentsNum(); s++) {
-      strip.getSegment(s).freeze = false;
-    }
-    if (realtimeMode && !realtimeOverride && useMainSegmentOnly) { // keep live segment frozen if live
-      strip.getMainSegment().freeze = true;
+  // Handle brightness changes
+  if (root.containsKey("bri")) {
+    uint8_t newBri = 0;
+    if (root["bri"].is<int>()) {
+      newBri = root["bri"].as<int>();
+      if (newBri != bri) {
+        bri = newBri;
+        if (bri) briLast = bri;
+        stateUpdated(callMode);
+      }
     }
   }
 
@@ -663,7 +697,7 @@ void serializeInfo(JsonObject root)
 
   leds[F("rgbw")] = strip.hasRGBWBus(); // deprecated, use info.leds.lc
   leds[F("wv")]   = totalLC & 0x02;     // deprecated, true if white slider should be displayed for any segment
-  leds["cct"]     = totalLC & 0x04;     // deprecated, use info.leds.lc
+  leds[F("cct")]     = totalLC & 0x04;     // deprecated, use info.leds.lc
 
   #ifdef WLED_DEBUG
   JsonArray i2c = root.createNestedArray(F("i2c"));

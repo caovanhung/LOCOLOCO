@@ -94,58 +94,88 @@ void applyFinalBri() {
 
 //called after every state changes, schedules interface updates, handles brightness transition and nightlight activation
 //unlike colorUpdated(), does NOT apply any colors or FX to segments
-void stateUpdated(byte callMode) {
-  //call for notifier -> 0: init 1: direct change 2: button 3: notification 4: nightlight 5: other (No notification)
-  //                     6: fx changed 7: hue 8: preset cycle 9: blynk 10: alexa 11: ws send only 12: button preset
-  setValuesFromFirstSelectedSeg();
+void stateUpdated(uint8_t callMode) {
+  DEBUG_PRINTF_P(PSTR("stateUpdated() called with mode %d\n"), callMode);
+  
+  if (callMode == CALL_MODE_DIRECT_CHANGE) {
+    DEBUG_PRINTLN(F("Direct change mode - updating LED state"));
+    
+    // Get values from first selected segment
+    Segment& seg = strip.getSegment(0);
+    uint8_t segBri = seg.getBrightness();
+    bool segState = seg.isActive();
+    
+    DEBUG_PRINTF_P(PSTR("Selected segment: bri=%d, state=%d\n"), segBri, segState);
+    
+    // Update global state
+    if (bri != segBri) {
+      bri = segBri;
+      if (bri) briLast = bri;
+    }
+    
+    if (state != segState) {
+      state = segState;
+      DEBUG_PRINTF_P(PSTR("State changed to %d\n"), state);
+    }
 
-  if (bri != briOld || stateChanged) {
-    if (stateChanged) currentPreset = 0; //something changed, so we are no longer in the preset
+    // Reset segment runtime if brightness or state changed
+    if (bri != briOld || state != stateOld) {
+      DEBUG_PRINTLN(F("Brightness or state changed - resetting segments"));
+      strip.resetSegments();
+      if (currentPreset != 0) {
+        DEBUG_PRINTLN(F("Resetting current preset"));
+        currentPreset = 0;
+      }
+    }
 
-    // if (callMode != CALL_MODE_NOTIFICATION && callMode != CALL_MODE_NO_NOTIFY) notify(callMode);
-    // if (bri != briOld && nodeBroadcastEnabled) sendSysInfoUDP(); // update on state
+    // Handle nightlight
+    if (nightlightActive && !nightlightActiveOld) {
+      DEBUG_PRINTLN(F("Nightlight activated"));
+      nightlightActiveOld = true;
+      nightlightStartTime = millis();
+    } else if (!nightlightActive && nightlightActiveOld) {
+      DEBUG_PRINTLN(F("Nightlight deactivated"));
+      nightlightActiveOld = false;
+    }
 
-    //set flag to update ws and mqtt
-    interfaceUpdateCallMode = callMode;
-    stateChanged = false;
-  } else {
-    if (nightlightActive && !nightlightActiveOld && callMode != CALL_MODE_NOTIFICATION && callMode != CALL_MODE_NO_NOTIFY) {
-      // notify(CALL_MODE_NIGHTLIGHT);
-      interfaceUpdateCallMode = CALL_MODE_NIGHTLIGHT;
+    // Update interface call mode
+    if (callMode != CALL_MODE_NO_NOTIFY) {
+      DEBUG_PRINTLN(F("Notifying interfaces of state change"));
+      notify(callMode);
+    }
+
+    // Handle brightness and transition
+    if (bri != briT) {
+      DEBUG_PRINTF_P(PSTR("Brightness transition: %d -> %d\n"), briT, bri);
+      if (bri > briT) {
+        briT++;
+      } else {
+        briT--;
+      }
+    }
+
+    if (transitionActive) {
+      DEBUG_PRINTLN(F("Transition active - updating transition"));
+      transitionDelay = transitionDelay;
+      transitionActive = false;
+      transitionStartTime = millis();
+    }
+
+    // Reset timebase if brightness target is 0
+    if (briT == 0) {
+      DEBUG_PRINTLN(F("Brightness target is 0 - resetting timebase"));
+      strip.resetTimebase();
+    }
+
+    // Notify usermods of state change
+    usermods.handleStateChange(callMode);
+
+    // Handle transitions
+    if (transitionActive) {
+      DEBUG_PRINTLN(F("Processing transition"));
+      handleTransitions();
     }
   }
-
-  unsigned long now = millis();
-  if (callMode != CALL_MODE_NO_NOTIFY && nightlightActive && (nightlightMode == NL_MODE_FADE || nightlightMode == NL_MODE_COLORFADE)) {
-    briNlT = bri;
-    nightlightDelayMs -= (now - nightlightStartTime);
-    nightlightStartTime = now;
-  }
-  if (briT == 0) {
-    if (callMode != CALL_MODE_NOTIFICATION) strip.resetTimebase(); //effect start from beginning
-  }
-
-  if (bri > 0) briLast = bri;
-
-  //deactivate nightlight if target brightness is reached
-  if (bri == nightlightTargetBri && callMode != CALL_MODE_NO_NOTIFY && nightlightMode != NL_MODE_SUN) nightlightActive = false;
-
-  // notify usermods of state change
-  UsermodManager::onStateChange(callMode);
-
-  if (strip.getTransition() == 0) {
-    jsonTransitionOnce = false;
-    transitionActive = false;
-    applyFinalBri();
-    return;
-  }
-
-  if (transitionActive) {
-    briOld = briT;
-  } else
-    strip.setTransitionMode(true); // force all segments to transition mode
-  transitionActive = true;
-  transitionStartTime = now;
 }
 
 
