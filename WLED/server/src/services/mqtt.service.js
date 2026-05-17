@@ -26,6 +26,7 @@ function connect() {
 
   client.on('connect', () => {
     console.log('MQTT connected');
+    client.subscribe('loco/v1/provision');        // Option A: auto-provision
     client.subscribe('loco/v1/+/rpt/state');
     client.subscribe('loco/v1/+/rpt/sensor');
     client.subscribe('loco/v1/+/evt/status');
@@ -34,6 +35,17 @@ function connect() {
   client.on('message', async (topic, payload) => {
     let msg;
     try { msg = JSON.parse(payload.toString()); } catch { return; }
+
+    // Option A: ESP8266 publishes here on first connect → auto-register
+    if (topic === 'loco/v1/provision') {
+      const { devId, name } = msg;
+      if (devId) {
+        const label = name || `ESP-${devId.replace('esp_', '')}`;
+        const inserted = await db.provisionDevice(devId, label).catch(console.error);
+        if (inserted) console.log(`Auto-provisioned device: ${devId}`);
+      }
+      return;
+    }
 
     const parts = topic.split('/');
     if (parts.length < 5) return;

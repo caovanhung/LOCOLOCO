@@ -1,5 +1,6 @@
 // SW/LOCO_FIRME_V1.0.3/src/mqtt_handler.cpp
 #include "mqtt_handler.h"
+#include "network.h"
 #include "config.h"
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
@@ -11,19 +12,35 @@ static PubSubClient     mqttClient(wifiClient);
 static CommandCallback  cmdCallback;
 static char             msgIdBuf[9];
 
+// Option A: runtime device ID and topics built from MAC
+static char devId[20];
+static char topicCmdLed[64];
+static char topicRptState[64];
+static char topicRptSensor[64];
+static char topicEvtStatus[64];
+static const char* topicProvision = "loco/v1/provision";
+
+static void buildTopics() {
+  String id = getDeviceId();
+  strlcpy(devId, id.c_str(), sizeof(devId));
+  snprintf(topicCmdLed,    sizeof(topicCmdLed),    "loco/v1/%s/cmd/led",    devId);
+  snprintf(topicRptState,  sizeof(topicRptState),  "loco/v1/%s/rpt/state",  devId);
+  snprintf(topicRptSensor, sizeof(topicRptSensor), "loco/v1/%s/rpt/sensor", devId);
+  snprintf(topicEvtStatus, sizeof(topicEvtStatus), "loco/v1/%s/evt/status", devId);
+}
+
 static void genMsgId() {
   uint32_t r = ESP.getCycleCount() ^ millis();
   snprintf(msgIdBuf, sizeof(msgIdBuf), "%08x", r);
 }
 
-static bool buildEnvelope(JsonDocument& doc, const char* type) {
+static void buildEnvelope(JsonDocument& doc, const char* type) {
   genMsgId();
   doc["v"]     = PROTO_VERSION;
   doc["msgId"] = msgIdBuf;
   doc["ts"]    = (long long)millis();
-  doc["devId"] = DEVICE_ID;
+  doc["devId"] = devId;
   doc["type"]  = type;
-  return true;
 }
 
 static void onMqttMessage(char* topic, byte* payload, unsigned int len) {
@@ -56,6 +73,21 @@ static void onMqttMessage(char* topic, byte* payload, unsigned int len) {
   if (cmdCallback) cmdCallback(dp1, dp2, dp3, dp4);
 }
 
+static void publishProvision() {
+  StaticJsonDocument<200> doc;
+  doc["devId"] = devId;
+  // Default name can be changed by user in app later
+  char nameBuf[32];
+  snprintf(nameBuf, sizeof(nameBuf), "ESP-%s", devId + 4); // strip "esp_" prefix
+  doc["name"] = nameBuf;
+  doc["mac"]  = getMacStr().c_str();
+  char buf[200];
+  serializeJson(doc, buf, sizeof(buf));
+  mqttClient.publish(topicProvision, buf, false);
+  Serial.print("Provision published: ");
+  Serial.println(devId);
+}
+
 static void mqttConnect() {
   char lwtPayload[192];
   StaticJsonDocument<192> lwtDoc;
@@ -67,21 +99,28 @@ static void mqttConnect() {
   mqttClient.setCallback(onMqttMessage);
   mqttClient.setKeepAlive(MQTT_KEEPALIVE);
 
-  if (mqttClient.connect(DEVICE_ID, MQTT_USER, MQTT_PASS,
-                         TOPIC_EVT_STATUS, 0, true, lwtPayload)) {
-    mqttClient.subscribe(TOPIC_CMD_LED, 1);
+  // Client ID = devId (unique per device), username = shared "device" user
+  if (mqttClient.connect(devId, MQTT_USER, MQTT_PASS,
+                         topicEvtStatus, 0, true, lwtPayload)) {
+    mqttClient.subscribe(topicCmdLed, 1);
+
+    // Option A: auto-register device with server on first connect
+    publishProvision();
+
+    // Publish online event
     StaticJsonDocument<192> onlineDoc;
     buildEnvelope(onlineDoc, "evt");
     onlineDoc["data"]["online"] = true;
     char onlineBuf[192];
     serializeJson(onlineDoc, onlineBuf, sizeof(onlineBuf));
-    mqttClient.publish(TOPIC_EVT_STATUS, onlineBuf, true);
+    mqttClient.publish(topicEvtStatus, onlineBuf, true);
     Serial.println("MQTT connected");
   }
 }
 
 void mqttInit(CommandCallback onCmd) {
   cmdCallback = onCmd;
+  buildTopics(); // build dynamic topics from MAC
   wifiClient.setInsecure();
   mqttConnect();
 }
@@ -111,7 +150,7 @@ void mqttPublishState(bool on, uint8_t bri, uint8_t effect,
 
   char buf[384];
   serializeJson(doc, buf, sizeof(buf));
-  mqttClient.publish(TOPIC_RPT_STATE, buf, true);
+  mqttClient.publish(topicRptState, buf, true);
 }
 
 void mqttPublishSensor(int pirVal, int ldrVal, float temp, float hum,
@@ -125,5 +164,5 @@ void mqttPublishSensor(int pirVal, int ldrVal, float temp, float hum,
 
   char buf[384];
   serializeJson(doc, buf, sizeof(buf));
-  mqttClient.publish(TOPIC_RPT_SENSOR, buf, false);
+  mqttClient.publish(topicRptSensor, buf, false);
 }

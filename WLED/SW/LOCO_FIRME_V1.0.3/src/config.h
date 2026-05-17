@@ -1,9 +1,6 @@
 // SW/LOCO_FIRME_V1.0.3/src/config.h
 #pragma once
 
-// === Device ===
-#define DEVICE_ID        "esp_001"
-
 // === WiFi ===
 #define WIFI_SSID        "Loco"
 #define WIFI_PASS        "matkhau1"
@@ -11,15 +8,12 @@
 // === MQTT Broker (MQTTS port 8883) ===
 #define MQTT_HOST        "your-vps.com"
 #define MQTT_PORT        8883
-#define MQTT_USER        DEVICE_ID
+// Shared MQTT user for all ESP devices — no per-device credentials needed
+#define MQTT_USER        "device"
 #define MQTT_PASS        "device_password_here"
 #define MQTT_KEEPALIVE   120
 
-// === MQTT Topics (loco/v1/{device_id}/...) ===
-#define TOPIC_CMD_LED    "loco/v1/" DEVICE_ID "/cmd/led"
-#define TOPIC_RPT_STATE  "loco/v1/" DEVICE_ID "/rpt/state"
-#define TOPIC_RPT_SENSOR "loco/v1/" DEVICE_ID "/rpt/sensor"
-#define TOPIC_EVT_STATUS "loco/v1/" DEVICE_ID "/evt/status"
+// Topics are built dynamically in mqtt_handler.cpp using MAC-based device ID
 
 // === LED ===
 #define LED_PIN          2       // GPIO2 / D4

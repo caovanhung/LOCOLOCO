@@ -10,6 +10,13 @@ module.exports = {
     pool.query('SELECT id, name, location, online, created_at FROM devices ORDER BY created_at DESC')
       .then(r => r.rows),
 
+  // Option A: auto-register device from MQTT provision message, no-op if already exists
+  provisionDevice: (id, name) =>
+    pool.query(
+      `INSERT INTO devices (id, name) VALUES ($1, $2) ON CONFLICT (id) DO NOTHING RETURNING *`,
+      [id, name]
+    ).then(r => r.rows[0]),
+
   upsertDevice: (id, name, location) =>
     pool.query(
       `INSERT INTO devices (id, name, location)
