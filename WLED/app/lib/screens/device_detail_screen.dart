@@ -5,7 +5,6 @@ import '../models/device.dart';
 import '../models/mqtt_message.dart';
 import '../providers/mqtt_provider.dart';
 import '../providers/device_provider.dart';
-import '../services/mqtt_service.dart';
 import '../widgets/led_control_panel.dart';
 import '../widgets/online_badge.dart';
 import '../widgets/sensor_panel.dart';

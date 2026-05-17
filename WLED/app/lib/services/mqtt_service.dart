@@ -54,7 +54,7 @@ class MqttService {
   }
 
   void unsubscribe(String topic) {
-    _client?.unsubscribeStringTopic(topic);
+    _client?.unsubscribe(topic);
   }
 
   void publish(String topic, Map<String, dynamic> envelope) {

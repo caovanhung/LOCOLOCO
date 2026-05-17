@@ -51,7 +51,7 @@ class LedControlPanel extends StatelessWidget {
               pickersEnabled: const {ColorPickerType.wheel: true},
             ).showPickerDialog(context);
             if (ok) {
-              onChanged(state.copyWith(r: picked.red, g: picked.green, b: picked.blue));
+              onChanged(state.copyWith(r: picked.r.toInt(), g: picked.g.toInt(), b: picked.b.toInt()));
             }
           },
         ),

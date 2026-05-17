@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/device_provider.dart';
-import '../models/device.dart';
 import 'device_detail_screen.dart';
 import 'add_device_screen.dart';
 
