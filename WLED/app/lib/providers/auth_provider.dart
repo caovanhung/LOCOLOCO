@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_service.dart';
 
-const _serverUrl = 'https://your-vps.com:3000';
+const _serverUrl = 'https://hung-test.codeaplha.biz';
 
 final apiServiceProvider = Provider<ApiService>((ref) => ApiService(_serverUrl));
 
