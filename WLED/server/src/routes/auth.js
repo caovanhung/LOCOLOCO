@@ -25,8 +25,8 @@ router.post('/login', loginLimiter, async (req, res) => {
     res.json({
       token,
       mqtt: {
-        host: process.env.MQTT_HOST,
-        port: Number(process.env.MQTT_PORT) || 8883,
+        host: process.env.APP_MQTT_HOST,
+        port: Number(process.env.APP_MQTT_PORT) || 8883,
         username: process.env.APP_MQTT_USER,
         password: process.env.APP_MQTT_PASS,
       }
