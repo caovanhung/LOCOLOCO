@@ -29,9 +29,12 @@ if [ ! -f "./mosquitto/passwd" ]; then
   read -rs SERVER_PASS
   echo "Enter password for MQTT user 'app_user' (use value of APP_MQTT_PASS from .env):"
   read -rs APP_PASS
-  docker run --rm -v "${SCRIPT_DIR}/mosquitto:/mosquitto/config" eclipse-mosquitto:2 \
-    sh -c "mosquitto_passwd -c -b /mosquitto/config/passwd server '${SERVER_PASS}' && \
-           mosquitto_passwd -b /mosquitto/config/passwd app_user '${APP_PASS}'"
+  docker run --rm \
+    -e MQTT_SERVER_PASS="${SERVER_PASS}" \
+    -e MQTT_APP_PASS="${APP_PASS}" \
+    -v "${SCRIPT_DIR}/mosquitto:/mosquitto/config" eclipse-mosquitto:2 \
+    sh -c 'mosquitto_passwd -c -b /mosquitto/config/passwd server "$MQTT_SERVER_PASS" && \
+           mosquitto_passwd -b /mosquitto/config/passwd app_user "$MQTT_APP_PASS"'
   echo "==> Mosquitto passwd file created."
 else
   echo "==> Mosquitto passwd file already exists, skipping."
@@ -85,8 +88,8 @@ read -r ADMIN_USER
 echo "    Enter password:"
 read -rs ADMIN_PASS
 
-HASH=$(docker compose exec -T server node -e \
-  "const b=require('bcryptjs'); console.log(b.hashSync('${ADMIN_PASS}', 10))")
+HASH=$(docker compose exec -T -e ADMIN_PASS="${ADMIN_PASS}" server \
+  node -e "const b=require('bcryptjs'); console.log(b.hashSync(process.env.ADMIN_PASS, 10))")
 
 docker compose exec -T postgres psql -U "${POSTGRES_USER}" "${POSTGRES_DB}" -c \
   "INSERT INTO users (username, password_hash) VALUES ('${ADMIN_USER}', '${HASH}')
