@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json());
 const authRoutes = require('./routes/auth');
 const deviceRoutes = require('./routes/devices');
