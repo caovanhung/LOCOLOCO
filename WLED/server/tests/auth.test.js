@@ -63,8 +63,8 @@ describe('POST /api/auth/login', () => {
       .post('/api/auth/login')
       .send({ username: 'admin', password: 'admin123' });
 
-    process.env.MQTT_HOST = prev.host;
-    process.env.MQTT_PORT = prev.port;
+    if (prev.host === undefined) delete process.env.MQTT_HOST; else process.env.MQTT_HOST = prev.host;
+    if (prev.port === undefined) delete process.env.MQTT_PORT; else process.env.MQTT_PORT = prev.port;
     delete process.env.APP_MQTT_HOST;
     delete process.env.APP_MQTT_PORT;
 
