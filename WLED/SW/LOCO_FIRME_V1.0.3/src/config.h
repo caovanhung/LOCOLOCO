@@ -13,11 +13,11 @@
 #define SETUP_PIN         0              // GPIO0 / D3 / FLASH button (active LOW)
 #define SETUP_HOLD_MS     3000           // hold duration to trigger AP mode
 
-// === MQTT Broker (MQTTS port 8883) ===
-#define MQTT_HOST         "your-vps.com"
-#define MQTT_PORT         8883
-#define MQTT_USER         "device"       // shared user for all ESP devices
-#define MQTT_PASS         "device_password_here"
+// === MQTT Broker ===
+#define MQTT_HOST         "hung-test.codeaplha.biz"
+#define MQTT_PORT         1883
+#define MQTT_USER         "device"       // shared user for all ESP devices (must match Mosquitto passwd)
+#define MQTT_PASS         "Loco@device2024"  // must match password set in deploy/mosquitto/passwd
 #define MQTT_KEEPALIVE    120
 
 // Topics are built dynamically in mqtt_handler.cpp using MAC-based device ID

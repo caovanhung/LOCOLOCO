@@ -1,0 +1,13 @@
+# Mosquitto password file — DO NOT commit the real passwd file to git.
+#
+# Create the real passwd file on VPS (run once, then restart mosquitto):
+#
+#   docker compose exec mosquitto mosquitto_passwd -b /mosquitto/config/passwd device   Loco@device2024
+#   docker compose exec mosquitto mosquitto_passwd -b /mosquitto/config/passwd server   Loco@server2024
+#   docker compose exec mosquitto mosquitto_passwd -b /mosquitto/config/passwd app_user Loco@app2024
+#   docker compose restart mosquitto
+#
+# Three users:
+#   device   — all ESP8266/ESP32 firmware  (config.h: MQTT_USER / MQTT_PASS)
+#   server   — Node.js server              (.env: MQTT_USER / MQTT_PASS)
+#   app_user — Flutter app after login     (.env: APP_MQTT_USER / APP_MQTT_PASS)
