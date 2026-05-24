@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../models/device.dart';
 import '../models/schedule.dart';
@@ -44,24 +45,37 @@ class ApiService {
       return await fn();
     } on DioException catch (e) {
       final code = e.response?.statusCode;
-      final msg = e.response?.data?['error'] as String? ?? e.message ?? 'Network error';
+      final data = e.response?.data;
+      final msg = (data is Map ? data['error'] as String? : null) ?? e.message ?? 'Network error';
       throw ApiException(msg, statusCode: code);
     }
   }
 
   Future<LoginResult> login(String username, String password) => _call(() async {
+    debugPrint('[API] login sending: username="$username" password="$password"');
     final res = await _dio.post('/api/auth/login',
         data: {'username': username, 'password': password});
+    debugPrint('[API] login response: ${res.data}');
     final mqttMap = res.data['mqtt'] as Map<String, dynamic>;
+    debugPrint('[API] port type=${mqttMap['port'].runtimeType} value=${mqttMap['port']}');
     return LoginResult(
       token: res.data['token'] as String,
       mqtt: MqttCredentials(
         host: mqttMap['host'] as String,
-        port: (mqttMap['port'] as num).toInt(),
+        port: int.parse(mqttMap['port'].toString()),
         username: mqttMap['username'] as String,
         password: mqttMap['password'] as String,
       ),
     );
+  });
+
+  Future<void> register(String username, String email, String password) => _call(() async {
+    await _dio.post('/api/auth/register',
+        data: {'username': username, 'email': email, 'password': password});
+  });
+
+  Future<void> resendVerification(String email) => _call(() async {
+    await _dio.post('/api/auth/resend-verification', data: {'email': email});
   });
 
   Future<List<Device>> getDevices() => _call(() async {
