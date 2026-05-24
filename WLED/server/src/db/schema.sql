@@ -1,7 +1,11 @@
 CREATE TABLE IF NOT EXISTS users (
-  id            SERIAL PRIMARY KEY,
-  username      VARCHAR(50) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL
+  id                 SERIAL PRIMARY KEY,
+  username           VARCHAR(50) UNIQUE NOT NULL,
+  password_hash      VARCHAR(255) NOT NULL,
+  email              TEXT UNIQUE NOT NULL,
+  email_verified     BOOLEAN NOT NULL DEFAULT false,
+  verification_token TEXT,
+  token_expires_at   TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS devices (
