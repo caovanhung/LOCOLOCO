@@ -83,5 +83,33 @@ module.exports = {
   deleteRule: (id) =>
     pool.query('DELETE FROM sensor_rules WHERE id=$1', [id]),
 
+  createUser: (username, email, passwordHash, token, expiresAt) =>
+    pool.query(
+      `INSERT INTO users (username, email, password_hash, verification_token, token_expires_at)
+       VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email`,
+      [username, email, passwordHash, token, expiresAt]
+    ).then(r => r.rows[0]),
+
+  findUserByEmail: (email) =>
+    pool.query('SELECT * FROM users WHERE email = $1', [email])
+      .then(r => r.rows[0]),
+
+  findUserByVerificationToken: (token) =>
+    pool.query('SELECT * FROM users WHERE verification_token = $1', [token])
+      .then(r => r.rows[0]),
+
+  markEmailVerified: (userId) =>
+    pool.query(
+      `UPDATE users SET email_verified = true, verification_token = NULL, token_expires_at = NULL
+       WHERE id = $1`,
+      [userId]
+    ),
+
+  updateVerificationToken: (userId, token, expiresAt) =>
+    pool.query(
+      'UPDATE users SET verification_token = $2, token_expires_at = $3 WHERE id = $1',
+      [userId, token, expiresAt]
+    ),
+
   end: () => pool.end(),
 };
