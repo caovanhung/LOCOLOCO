@@ -10,17 +10,31 @@ class AuthState {
   final String? token;
   final MqttCredentials? mqttCreds;
   final String? error;
+  final bool isUnverified;
 
-  const AuthState({this.isLoading = false, this.token, this.mqttCreds, this.error});
+  const AuthState({
+    this.isLoading = false,
+    this.token,
+    this.mqttCreds,
+    this.error,
+    this.isUnverified = false,
+  });
 
   bool get isLoggedIn => token != null;
-  AuthState copyWith({bool? isLoading, String? token, MqttCredentials? mqttCreds, String? error}) =>
-    AuthState(
-      isLoading: isLoading ?? this.isLoading,
-      token: token ?? this.token,
-      mqttCreds: mqttCreds ?? this.mqttCreds,
-      error: error,
-    );
+
+  AuthState copyWith({
+    bool? isLoading,
+    String? token,
+    MqttCredentials? mqttCreds,
+    String? error,
+    bool? isUnverified,
+  }) => AuthState(
+    isLoading: isLoading ?? this.isLoading,
+    token: token ?? this.token,
+    mqttCreds: mqttCreds ?? this.mqttCreds,
+    error: error,
+    isUnverified: isUnverified ?? false,
+  );
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -28,11 +42,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._api) : super(const AuthState());
 
   Future<void> login(String username, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, isUnverified: false);
     try {
       final result = await _api.login(username, password);
       _api.setToken(result.token);
       state = state.copyWith(isLoading: false, token: result.token, mqttCreds: result.mqtt);
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.message,
+        isUnverified: e.statusCode == 403,
+      );
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
