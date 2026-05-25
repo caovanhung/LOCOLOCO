@@ -1,10 +1,11 @@
-// app/lib/screens/device_list_screen.dart
-// Option A: devices auto-appear after ESP8266 connects — no manual add needed.
-// User just pulls-to-refresh or taps refresh icon.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/device_provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/mqtt_provider.dart';
 import 'device_detail_screen.dart';
+import 'add_device_screen.dart';
+import 'login_screen.dart';
 
 class DeviceListScreen extends ConsumerWidget {
   const DeviceListScreen({super.key});
@@ -21,7 +22,31 @@ class DeviceListScreen extends ConsumerWidget {
             tooltip: 'Làm mới danh sách',
             onPressed: () => ref.invalidate(deviceListProvider),
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Đăng xuất',
+            onPressed: () async {
+              ref.read(mqttServiceProvider).disconnect();
+              ref.read(mqttConnectedProvider.notifier).state = false;
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (_) => false,
+                );
+              }
+            },
+          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const AddDeviceScreen()));
+          ref.invalidate(deviceListProvider);
+        },
+        tooltip: 'Thêm thiết bị',
+        child: const Icon(Icons.add),
       ),
       body: devicesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

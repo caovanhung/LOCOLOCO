@@ -6,8 +6,8 @@ const rateLimit = require('express-rate-limit');
 const db = require('../db/queries');
 const { sendVerificationEmail } = require('../services/email.service');
 
-const loginLimiter    = rateLimit({ windowMs: 15 * 60 * 1000, max: 20 });
-const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });
+const loginLimiter    = rateLimit({ windowMs: 15 * 60 * 1000, max: 100, keyGenerator: (req) => req.ip || req.headers['x-forwarded-for'] || 'unknown' });
+const registerLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 20,  keyGenerator: (req) => req.ip || req.headers['x-forwarded-for'] || 'unknown' });
 
 // POST /api/auth/register
 router.post('/register', registerLimiter, async (req, res) => {
@@ -120,6 +120,23 @@ router.post('/login', loginLimiter, async (req, res) => {
     console.error('login error', err);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// POST /api/admin/user-info  { email, secret }  → trả username + verified status
+// POST /api/admin/force-verify { email, secret } → mark email verified
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'loco-admin-2024';
+router.post('/admin/user-info', async (req, res) => {
+  if (req.body.secret !== ADMIN_SECRET) return res.status(403).json({ error: 'forbidden' });
+  const user = await db.findUserByEmail(req.body.email);
+  if (!user) return res.status(404).json({ error: 'not found' });
+  res.json({ username: user.username, email: user.email, verified: user.email_verified });
+});
+router.post('/admin/force-verify', async (req, res) => {
+  if (req.body.secret !== ADMIN_SECRET) return res.status(403).json({ error: 'forbidden' });
+  const user = await db.findUserByEmail(req.body.email);
+  if (!user) return res.status(404).json({ error: 'not found' });
+  await db.markEmailVerified(user.id);
+  res.json({ ok: true, username: user.username });
 });
 
 function htmlPage(title, message) {

@@ -103,11 +103,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final auth = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('LOCOLOCO')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 60),
             TextField(
               controller: _userCtrl,
               decoration: const InputDecoration(labelText: 'Username'),
@@ -134,6 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 MaterialPageRoute(builder: (_) => const RegisterScreen())),
               child: const Text('Chưa có tài khoản? Đăng ký'),
             ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
